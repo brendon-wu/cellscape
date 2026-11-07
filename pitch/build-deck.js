@@ -52,14 +52,13 @@ const title = (s, text, opts = {}) =>
   eyebrow(s, "Team", 0.6, 0.5);
   title(s, "Built by");
   const people = [
-    { initials: "BW", name: "Brendon Wu", line: "Computer Science, Stanford '29" },
-    { initials: "JL", name: "Justin Lam", line: "Course 6-4, MIT '28" },
+    { photo: "brendon.jpg", name: "Brendon Wu", line: "Computer Science, Stanford '29" },
+    { photo: "justin.jpg", name: "Justin Lam", line: "Course 6-4, MIT '28" },
   ];
   people.forEach((p, i) => {
     const x = 0.6 + i * 4.5;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.85, w: 4.2, h: 2.6, rectRadius: 0.12, fill: { color: SURF }, line: { color: LINE, width: 0.75 }, objectName: `${p.name} card` });
-    s.addShape(pres.shapes.OVAL, { x: x + 0.4, y: 2.25, w: 1.0, h: 1.0, fill: { color: GREEN }, line: { type: "none" }, objectName: `${p.name} avatar` });
-    s.addText(p.initials, { x: x + 0.4, y: 2.25, w: 1.0, h: 1.0, fontFace: FONT, fontSize: 22, bold: true, color: BG, align: "center", valign: "middle", margin: 0, isTextBox: true });
+    s.addImage({ path: path.join(ASSETS, p.photo), x: x + 0.4, y: 2.15, w: 1.15, h: 1.15, rounding: true, altText: `Headshot of ${p.name}`, objectName: `${p.name} headshot` });
     s.addText(p.name, { x: x + 0.4, y: 3.45, w: 3.5, h: 0.45, fontFace: FONT, fontSize: 22, color: TEXT, margin: 0, isTextBox: true });
     s.addText(p.line, { x: x + 0.4, y: 3.9, w: 3.5, h: 0.35, fontFace: FONT, fontSize: 14, color: MUTED, margin: 0, isTextBox: true });
   });
@@ -163,4 +162,5 @@ const title = (s, text, opts = {}) =>
 }
 
 pres.writeFile({ fileName: OUT }).then((f) => console.log("wrote", f));
-
+
+
