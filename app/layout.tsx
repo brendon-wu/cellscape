@@ -6,9 +6,8 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CELLSCAPE — every cell counts",
-  description:
-    "One weak cell strands a whole battery. CELLSCAPE models what REON-style cell-level control recovers for a 5 MWh grid battery.",
+  title: "CELLSCAPE — REON’s savings, made visible",
+  description: "Simulate your battery and see exactly what cell-level control gives back.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

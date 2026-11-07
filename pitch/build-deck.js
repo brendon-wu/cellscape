@@ -37,13 +37,12 @@ const title = (s, text, opts = {}) =>
   s.addText("CELLSCAPE", { x: 0.6, y: 3.45, w: 8.8, h: 0.9, fontFace: FONT, fontSize: 54, color: TEXT, charSpacing: 2, margin: 0, isTextBox: true });
   s.addText(
     [
-      { text: "One weak cell ", options: { color: TEXT } },
-      { text: "strands", options: { color: RED } },
-      { text: " a whole battery. We make every cell count.", options: { color: TEXT } },
+      { text: "REON’s savings, made visible. ", options: { color: GREEN } },
+      { text: "Simulate your battery and see exactly what cell-level control gives back.", options: { color: TEXT } },
     ],
-    { x: 0.6, y: 4.35, w: 8.8, h: 0.5, fontFace: FONT, fontSize: 18, margin: 0, isTextBox: true }
+    { x: 0.6, y: 4.3, w: 8.8, h: 0.65, fontFace: FONT, fontSize: 17, margin: 0, valign: "top", isTextBox: true }
   );
-  s.addNotes("Every battery has a weakest cell, and today that one cell decides how much the whole battery can deliver. We built CELLSCAPE to change that.");
+  s.addNotes("This is CELLSCAPE: REON's savings, made visible. Any battery owner can simulate their own fleet and see exactly what cell-level control gives back.");
 }
 
 // 2. Team
@@ -57,10 +56,10 @@ const title = (s, text, opts = {}) =>
   ];
   people.forEach((p, i) => {
     const x = 0.6 + i * 4.5;
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.85, w: 4.2, h: 2.6, rectRadius: 0.12, fill: { color: SURF }, line: { color: LINE, width: 0.75 }, objectName: `${p.name} card` });
-    s.addImage({ path: path.join(ASSETS, p.photo), x: x + 0.4, y: 2.15, w: 1.15, h: 1.15, rounding: true, altText: `Headshot of ${p.name}`, objectName: `${p.name} headshot` });
-    s.addText(p.name, { x: x + 0.4, y: 3.45, w: 3.5, h: 0.45, fontFace: FONT, fontSize: 22, color: TEXT, margin: 0, isTextBox: true });
-    s.addText(p.line, { x: x + 0.4, y: 3.9, w: 3.5, h: 0.35, fontFace: FONT, fontSize: 14, color: MUTED, margin: 0, isTextBox: true });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.7, w: 4.2, h: 3.05, rectRadius: 0.12, fill: { color: SURF }, line: { color: LINE, width: 0.75 }, objectName: `${p.name} card` });
+    s.addImage({ path: path.join(ASSETS, p.photo), x: x + 0.4, y: 1.95, w: 1.6, h: 1.6, rounding: true, altText: `Headshot of ${p.name}`, objectName: `${p.name} headshot` });
+    s.addText(p.name, { x: x + 0.4, y: 3.72, w: 3.5, h: 0.45, fontFace: FONT, fontSize: 22, color: TEXT, margin: 0, isTextBox: true });
+    s.addText(p.line, { x: x + 0.4, y: 4.17, w: 3.5, h: 0.35, fontFace: FONT, fontSize: 14, color: MUTED, margin: 0, isTextBox: true });
   });
   s.addNotes("I'm Brendon Wu, Computer Science at Stanford. I'm Justin Lam, Course 6-4 at MIT.");
 }
@@ -69,24 +68,23 @@ const title = (s, text, opts = {}) =>
 {
   const s = pres.addSlide({ masterName: "DARK" });
   eyebrow(s, "The problem", 0.6, 0.5);
-  title(s, "The weakest cell sets the limit");
-  const cells = [...Array(15).fill(85), 70];
-  const bx = 0.6, by = 1.95, cw = 0.27, gap = 0.08, ch = 2.3;
-  cells.forEach((q, i) => {
-    const x = bx + i * (cw + gap);
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: by, w: cw, h: ch, rectRadius: 0.04, fill: { color: SURF }, line: { color: LINE, width: 0.75 }, objectName: `Cell ${i + 1} shell` });
-    const fh = (ch * q) / 100;
-    s.addShape(pres.shapes.RECTANGLE, { x: x + 0.03, y: by + ch - fh + 0.03, w: cw - 0.06, h: fh - 0.06, fill: { color: q < 80 ? RED : GREEN, transparency: q < 80 ? 0 : 15 }, line: { type: "none" }, objectName: `Cell ${i + 1} charge` });
+  title(s, "Easy to claim, hard to price");
+  const cards = [
+    { label: "What a buyer hears", big: "“2–3× more usable capacity”", bigColor: TEXT, sub: "A strong claim, but the same for every customer" },
+    { label: "What a buyer needs to sign", big: "“What is it worth for my fleet?”", bigColor: GREEN, sub: "In years of service, dollars and tonnes of CO₂" },
+  ];
+  cards.forEach((c, i) => {
+    const x = 0.6 + i * 4.5;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.75, w: 4.2, h: 2.3, rectRadius: 0.12, fill: { color: SURF }, line: { color: i ? GREEN : LINE, width: 0.75 }, objectName: `${c.label} card` });
+    s.addText(c.label.toUpperCase(), { x: x + 0.35, y: 2.0, w: 3.5, h: 0.3, fontFace: FONT, fontSize: 10, color: MUTED, charSpacing: 3, margin: 0, isTextBox: true });
+    s.addText(c.big, { x: x + 0.35, y: 2.4, w: 3.5, h: 1.0, fontFace: FONT, fontSize: 24, color: c.bigColor, margin: 0, valign: "top", isTextBox: true });
+    s.addText(c.sub, { x: x + 0.35, y: 3.45, w: 3.5, h: 0.4, fontFace: FONT, fontSize: 13, color: MUTED, margin: 0, valign: "top", isTextBox: true });
   });
-  s.addShape(pres.shapes.LINE, { x: bx, y: by + ch * 0.3, w: 16 * (cw + gap) - gap, h: 0, line: { color: AMBER, width: 1, dashType: "dash" }, objectName: "70% limit" });
-  s.addText("15 cells at 85 Ah · 1 cell at 70 Ah · REON's example", { x: bx, y: by + ch + 0.15, w: 5.6, h: 0.3, fontFace: FONT, fontSize: 11, color: MUTED, margin: 0, isTextBox: true });
-
-  s.addText("84.06%", { x: 6.6, y: 1.9, w: 2.9, h: 0.75, fontFace: FONT, fontSize: 44, color: TEXT, margin: 0, isTextBox: true });
-  s.addText("Average cell health", { x: 6.6, y: 2.62, w: 2.9, h: 0.3, fontFace: FONT, fontSize: 13, color: MUTED, margin: 0, isTextBox: true });
-  s.addText("70%", { x: 6.6, y: 3.2, w: 2.9, h: 0.75, fontFace: FONT, fontSize: 44, color: RED, margin: 0, isTextBox: true });
-  s.addText("What the whole string can deliver", { x: 6.6, y: 3.92, w: 2.9, h: 0.3, fontFace: FONT, fontSize: 13, color: MUTED, margin: 0, isTextBox: true });
+  s.addText("Battery owners approve purchases on spreadsheets. Without a number for their own fleet, the value of cell-level control stays invisible.", {
+    x: 0.6, y: 4.3, w: 8.7, h: 0.6, fontFace: FONT, fontSize: 14, color: TEXT, margin: 0, valign: "top", isTextBox: true,
+  });
   s.addNotes(
-    "Grid batteries wire hundreds of cells in series, so the same current flows through all of them. When the weakest one hits its limit, the whole string stops. Take REON's own example: fifteen cells at 85 percent and one at 70. The average cell is at 84 percent, but the string can only deliver 70. The healthy cells still hold energy, and it's trapped. Balancing can't fix that, because aging takes away capacity for good."
+    "Battery owners buy on spreadsheets. They hear claims like two to three times more usable capacity, but what they need before they sign is a number for their own fleet: how many more years, how many dollars, how much carbon. Right now, nobody shows them that, so the value of cell-level control stays invisible."
   );
 }
 
@@ -115,27 +113,27 @@ const title = (s, text, opts = {}) =>
 {
   const s = pres.addSlide({ masterName: "DARK" });
   eyebrow(s, "The product", 0.6, 0.5);
-  title(s, "A digital twin of every cell");
-  s.addImage({ path: path.join(ASSETS, "hero-exploded.jpg"), x: 0.6, y: 1.75, w: 4.2, h: 2.38, rounding: false, objectName: "Exploded container render" });
+  title(s, "Simulate your battery");
+  s.addImage({ path: path.join(ASSETS, "hero-exploded.jpg"), x: 0.6, y: 1.75, w: 4.2, h: 2.38, objectName: "Exploded container render" });
   const rows = [
-    ["Simulates", "All 5,824 cells of a 2.5 MW / 5 MWh CES container over 20 years"],
-    ["Compares", "A conventional fixed string vs REON cell-level bypass and wear-leveling"],
-    ["Decides", "Years of service, augmentation capex and tCO₂ for the battery owner"],
+    ["Enter your fleet", "Fleet size, years in service and how mismatched your cells are"],
+    ["See every cell", "5,824 cells per REON CES container, fixed string vs REON control, over 20 years"],
+    ["Get your number", "Years of service, augmentation capex, NPV and tCO₂ for your fleet"],
   ];
   rows.forEach(([h, b], i) => {
     const y = 1.75 + i * 0.8;
     s.addText(h, { x: 5.2, y, w: 4.2, h: 0.3, fontFace: FONT, fontSize: 14, bold: true, color: GREEN, margin: 0, isTextBox: true });
     s.addText(b, { x: 5.2, y: y + 0.3, w: 4.2, h: 0.45, fontFace: FONT, fontSize: 13, color: TEXT, margin: 0, valign: "top", isTextBox: true });
   });
-  const metrics = [["+1.5 yrs", "more service"], ["$37k", "capex avoided"], ["+$16k", "NPV"], ["56 tCO₂", "avoided"]];
+  const metrics = [["+1.5 yrs", "more service"], ["$707k", "capex avoided"], ["+$302k", "added NPV"], ["1,083 tCO₂", "avoided"]];
   metrics.forEach(([k, l], i) => {
     const x = 0.6 + i * 2.2;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 4.3, w: 2.0, h: 0.7, rectRadius: 0.08, fill: { color: SURF }, line: { color: LINE, width: 0.75 }, objectName: `Metric ${l}` });
     s.addText(k, { x: x + 0.15, y: 4.33, w: 1.8, h: 0.4, fontFace: FONT, fontSize: 18, bold: true, color: i === 0 ? GREEN : TEXT, margin: 0, isTextBox: true });
-    s.addText(l + " · per container", { x: x + 0.15, y: 4.69, w: 1.8, h: 0.25, fontFace: FONT, fontSize: 9, color: MUTED, margin: 0, isTextBox: true });
+    s.addText(l + " · 100 MWh fleet", { x: x + 0.15, y: 4.69, w: 1.8, h: 0.25, fontFace: FONT, fontSize: 9, color: MUTED, margin: 0, isTextBox: true });
   });
   s.addNotes(
-    "CELLSCAPE is a digital twin of REON's 5-megawatt-hour container. It simulates all 5,824 cells over twenty years and compares a conventional fixed string with REON's cell-level bypass and wear-leveling. It gives the owner a decision: years of service, augmentation dollars and tonnes of CO2."
+    "CELLSCAPE gives them that number. You enter your fleet: how big it is, how long it has been running, how mismatched your cells are. It simulates every one of the 5,824 cells in each REON container over twenty years, with and without cell-level control. For a typical 100-megawatt-hour fleet, that's a year and a half more service, 700 thousand dollars of augmentation avoided, 300 thousand dollars of added value and over a thousand tonnes of CO2."
   );
 }
 
@@ -143,21 +141,21 @@ const title = (s, text, opts = {}) =>
 {
   const s = pres.addSlide({ masterName: "DARK" });
   eyebrow(s, "Live demo", 0.6, 0.5);
-  title(s, "Discharge both batteries. Watch one lock up");
+  title(s, "Your battery, with and without REON");
   s.addImage({ path: path.join(ASSETS, "simulator.jpg"), x: 0.6, y: 1.6, w: 5.9, h: 3.35, objectName: "Simulator screenshot" });
   s.addText("Try it", { x: 6.85, y: 1.65, w: 2.6, h: 0.3, fontFace: FONT, fontSize: 13, color: MUTED, margin: 0, isTextBox: true });
   s.addText("cellscape-beta.vercel.app", {
     x: 6.85, y: 1.95, w: 2.7, h: 0.5, fontFace: FONT, fontSize: 16, bold: true, color: GREEN, margin: 0, isTextBox: true,
     hyperlink: { url: "https://cellscape-beta.vercel.app" },
   });
-  const steps = ["Pick a year in the container's life", "Discharge: fixed strings lock with energy trapped", "Scrub 20 years against the 80% contract floor"];
+  const steps = ["Enter your fleet size and years in service", "Discharge: see what your weakest cells strand", "Read what REON gives back for your fleet"];
   s.addText(
     steps.map((t, i) => ({ text: t, options: { bullet: { type: "number" }, breakLine: i < steps.length - 1 } })),
     { x: 6.85, y: 2.65, w: 2.6, h: 1.6, fontFace: FONT, fontSize: 13, color: TEXT, paraSpaceAfter: 8, margin: 0, valign: "top", isTextBox: true }
   );
   s.addText("Modeled, not measured. Every input is cited on the site.", { x: 6.85, y: 4.45, w: 2.6, h: 0.5, fontFace: FONT, fontSize: 10, color: MUTED, margin: 0, valign: "top", isTextBox: true });
   s.addNotes(
-    "Here's year ten. We discharge both. The fixed strings lock up with energy trapped behind weak cells. CELLSCAPE bypasses those cells and keeps delivering: a year and a half more service, thirty-seven thousand dollars of augmentation avoided, and fifty-six tonnes of CO2 saved, per container. Every cell counts."
+    "Here's a 100-megawatt-hour fleet, ten years in. We discharge both versions. With a conventional BMS, the strings lock up with energy stranded behind weak cells. With REON, those cells are bypassed and the strings keep delivering. And the owner sees exactly what that's worth for their own fleet. REON's savings, made visible."
   );
 }
 

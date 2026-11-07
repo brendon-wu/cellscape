@@ -46,6 +46,7 @@ export default function Simulator() {
   const [outlierLive, setOutlierLive] = useState(DEFAULTS.outlierFrac);
   const [outlier, setOutlier] = useState(DEFAULTS.outlierFrac);
   const [year, setYear] = useState(10);
+  const [fleetMWh, setFleetMWh] = useState(100);
   const [phase, setPhase] = useState<"idle" | "running" | "done">("idle");
   const drawn = useRef(0);
   const raf = useRef(0);
@@ -57,6 +58,7 @@ export default function Simulator() {
   const fixedRet = fixed.years.map((y) => y.retention);
   const csRet = cs.years.map((y) => y.retention);
   const strandedKWh = Math.max(0, (csRet[year] - fixedRet[year]) * sim.nameplateKWh);
+  const containers = fleetMWh / (sim.nameplateKWh / 1000);
 
   const discharge = () => {
     cancelAnimationFrame(raf.current);
@@ -79,14 +81,14 @@ export default function Simulator() {
 
   return (
     <section id="simulator" className="mx-auto max-w-7xl px-6 py-28 md:px-10">
-      <p className="eyebrow mb-4">Simulator · one REON CES container · 5.2 MWh</p>
+      <p className="eyebrow mb-4">Simulate your battery · REON CES containers, 5.2 MWh each</p>
       <h2 className="max-w-4xl text-4xl font-light leading-[1.05] tracking-[-0.03em] md:text-6xl">
-        Same cells. Same year. <span className="text-accent">Different battery.</span>
+        Your fleet. Your year. <span className="text-accent">Your number.</span>
       </h2>
       <p className="mt-5 max-w-2xl text-muted">
-        Pick a year in the container&apos;s life and discharge it. On the left, each string stops when its weakest cell
-        empties. On the right, cell-level control bypasses cells as they empty, and wear-leveling eases off weak cells so
-        they age more slowly.
+        Set the size of your fleet and how long it has been running, then discharge it. On the left is your battery with a
+        conventional BMS, where each string stops when its weakest cell empties. On the right is the same battery with REON
+        cell-level control, which bypasses cells as they empty and eases off weak cells so they age more slowly.
       </p>
 
       <div className="mt-12 grid gap-4 md:grid-cols-2">
@@ -131,8 +133,17 @@ export default function Simulator() {
       <div className="mt-4 grid gap-4 md:grid-cols-[1fr_1.3fr]">
         <div className="rounded-2xl border border-line bg-surface p-6">
           <div className="flex items-center justify-between">
+            <label htmlFor="fleet" className="eyebrow">
+              Your fleet size
+            </label>
+            <span className="num text-2xl">{fleetMWh} MWh</span>
+          </div>
+          <input id="fleet" type="range" min={5} max={1000} step={5} value={fleetMWh} onChange={(e) => setFleetMWh(+e.target.value)} className="mt-3 w-full" />
+          <p className="mt-2 text-xs text-muted">≈ {containers.toFixed(1)} REON CES containers</p>
+
+          <div className="mt-6 flex items-center justify-between">
             <label htmlFor="year" className="eyebrow">
-              Year of operation
+              Years in service
             </label>
             <span className="num text-2xl">Y{year}</span>
           </div>
@@ -184,15 +195,16 @@ export default function Simulator() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+      <p className="eyebrow mt-10 mb-4">What REON gives back · your {fleetMWh} MWh fleet</p>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
-          { k: `+${sim.extraYears.toFixed(1)}`, u: "years", l: "before the contract floor is breached", accent: true },
-          { k: fmtUsd(sim.capexSavedUsd), u: "", l: "augmentation capex avoided over 20 years" },
-          { k: fmtUsd(sim.npvGainUsd), u: "", l: "NPV gain per container (8% discount rate)" },
+          { k: `+${sim.extraYears.toFixed(1)}`, u: "years", l: "more service before your contract floor is breached", accent: true },
+          { k: fmtUsd(sim.capexSavedUsd * containers), u: "", l: "augmentation capex you avoid over 20 years" },
+          { k: fmtUsd(sim.npvGainUsd * containers), u: "", l: "added NPV across your fleet (8% discount rate)" },
           {
-            k: `${Math.round(sim.tco2Avoided[1])}`,
+            k: `${Math.round(sim.tco2Avoided[1] * containers).toLocaleString()}`,
             u: "tCO₂",
-            l: `avoided cell manufacturing (range ${Math.round(sim.tco2Avoided[0])}–${Math.round(sim.tco2Avoided[2])})`,
+            l: `avoided cell manufacturing (range ${Math.round(sim.tco2Avoided[0] * containers).toLocaleString()}–${Math.round(sim.tco2Avoided[2] * containers).toLocaleString()})`,
           },
         ].map((m) => (
           <div key={m.l} className="rounded-2xl border border-line bg-surface p-6">

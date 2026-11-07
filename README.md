@@ -4,6 +4,8 @@
 
 Live: https://cellscape-beta.vercel.app
 
+**REON’s savings, made visible:** simulate your battery and see exactly what cell-level control gives back.
+
 Built for the REON challenge ("Beyond the Weakest Cell") at the MIT Energy & Climate Hack 2026 by Brendon Wu and Justin Lam. Not affiliated with REON.
 
 ## What it does

@@ -30,14 +30,14 @@ export function Problem() {
     <section id="problem" className="mx-auto max-w-7xl px-6 py-28 md:px-10">
       <div className="grid gap-14 md:grid-cols-[1fr_1.1fr] md:items-center">
         <div>
-          <p className="eyebrow mb-4">The weakest-cell limit · REON&apos;s 16-cell example</p>
+          <p className="eyebrow mb-4">What a conventional BMS hides · REON&apos;s 16-cell example</p>
           <h2 className="text-4xl font-light leading-[1.05] tracking-[-0.03em] md:text-6xl">
-            One cell at 70% drags the string down to 70%.
+            Your cells average 84%. Your battery delivers 70%.
           </h2>
           <p className="mt-6 max-w-lg text-muted">
-            In a series string, the same current runs through every cell. When the weakest cell hits its limit, the whole
-            string has to stop, even though the other fifteen still hold charge. Balancing can even out charge levels, but
-            it can&apos;t restore capacity a cell has lost to aging.
+            In a series string, the same current runs through every cell, so the weakest one sets the limit for all of
+            them. The other fifteen still hold charge, but you can&apos;t use it. Cell-level control can, and CELLSCAPE
+            shows you how much that&apos;s worth for your fleet.
           </p>
         </div>
         <div className="rounded-2xl border border-line bg-surface p-6 md:p-8">

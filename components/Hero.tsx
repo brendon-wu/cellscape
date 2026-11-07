@@ -6,18 +6,23 @@ import { useEffect, useRef, useState } from "react";
 const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
 const BEATS = [
-  { at: 0, eyebrow: "REON CES · 2.5 MW / 5 MWh", title: "One weak cell strands a whole battery.", body: "" },
+  {
+    at: 0,
+    eyebrow: "CELLSCAPE · built for REON",
+    title: "REON’s savings, made visible.",
+    body: "Simulate your battery and see exactly what cell-level control gives back.",
+  },
   {
     at: 0.33,
     eyebrow: "5,824 cells · 14 strings",
-    title: "Every string is only as strong as its weakest cell.",
-    body: "Conventional battery systems control the whole pack at once. When one cell hits its limit, the whole string stops, and the energy left in the healthy cells can't be used.",
+    title: "Your spec sheet says 5 MWh. Your weakest cells decide what you can use.",
+    body: "With a conventional BMS, a string stops when its weakest cell hits its limit, and the energy left in the healthy cells is stranded. Most owners never see how much that is.",
   },
   {
     at: 0.66,
-    eyebrow: "Cell-level control",
-    title: "CELLSCAPE makes every cell count.",
-    body: "It models what REON-style sensing and bypass recover for a grid battery's owner: years of service, dollars and tonnes of CO₂.",
+    eyebrow: "A cell-by-cell model of your fleet",
+    title: "See it in years, dollars and tonnes.",
+    body: "CELLSCAPE simulates every cell over 20 years, with and without REON's cell-level control, and puts a number on the difference for your fleet.",
   },
 ];
 
@@ -67,20 +72,21 @@ export default function Hero() {
               >
                 {i === 0 ? (
                   <>
-                    One weak cell <span className="text-red">strands</span>
-                    <br />a whole battery.
+                    REON’s savings,
+                    <br />
+                    <span className="text-accent">made visible.</span>
                   </>
                 ) : (
                   b.title
                 )}
               </h1>
               {b.body && <p className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">{b.body}</p>}
-              {i === 2 && (
+              {(i === 0 || i === 2) && (
                 <a
                   href="#simulator"
                   className="pointer-events-auto mt-7 inline-flex items-center gap-3 rounded-full bg-accent px-6 py-3 text-sm font-medium text-bg transition hover:brightness-110"
                 >
-                  Run the simulator <span aria-hidden>→</span>
+                  Simulate your battery <span aria-hidden>→</span>
                 </a>
               )}
             </div>
