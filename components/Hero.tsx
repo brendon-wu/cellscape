@@ -8,8 +8,8 @@ const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 const BEATS = [
   {
     at: 0,
-    eyebrow: "CELLSCAPE · built for REON",
-    title: "REON’s savings, made visible.",
+    eyebrow: "REON CES · 2.5 MW / 5 MWh",
+    title: "One weak cell strands a whole battery.",
     body: "",
   },
   {
@@ -72,9 +72,8 @@ export default function Hero() {
               >
                 {i === 0 ? (
                   <>
-                    REON’s savings,
-                    <br />
-                    <span className="text-red">made visible.</span>
+                    One weak cell <span className="text-red">strands</span>
+                    <br />a whole battery.
                   </>
                 ) : (
                   b.title
