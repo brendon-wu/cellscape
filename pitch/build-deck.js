@@ -87,7 +87,7 @@ const title = (s, text, opts = {}) =>
     x: 0.6, y: 4.3, w: 8.7, h: 0.6, fontFace: FONT, fontSize: 14, color: TEXT, margin: 0, valign: "top", isTextBox: true,
   });
   s.addNotes(
-    "Battery owners buy on spreadsheets. They hear claims like two to three times more usable capacity, but what they need before they sign is a number for their own fleet: how many more years, how many dollars, how much carbon. Right now, nobody shows them that, so the value of cell-level control stays invisible."
+    "Right now, battery owners buy without confidence. They hear claims like 2 to 3 times more usable capacity, but before they sign they need a number for their own fleet: how many more years, how many dollars, how much carbon."
   );
 }
 
@@ -108,7 +108,7 @@ const title = (s, text, opts = {}) =>
     s.addText(st.src.toUpperCase(), { x, y: 4.0, w: 2.8, h: 0.3, fontFace: FONT, fontSize: 9, color: MUTED, charSpacing: 2, margin: 0, isTextBox: true });
   });
   s.addNotes(
-    "Now scale that up. The world installed 307 gigawatt-hours of grid batteries in 2025, roughly 36 billion dollars of hardware. A Nature Energy study this year found that cell-to-cell mismatch cuts pack life by 18 to 23 percent. That's six to eight billion dollars of value lost from a single year of installs, and every year we install more."
+    "And the number is huge. The world installed 307 gigawatt-hours of grid batteries in 2025 alone, worth roughly 36 billion dollars. A Nature Energy study found that cell-to-cell mismatch cuts pack life by 18 to 23 percent. In short, that's 6 - 8 billion dollars of value lost from a single year of installs. That's the value REON can win back, if customers can see it."
   );
 }
 
@@ -136,7 +136,7 @@ const title = (s, text, opts = {}) =>
     s.addText(l + " · 100 MWh fleet", { x: x + 0.15, y: 4.69, w: 1.8, h: 0.25, fontFace: FONT, fontSize: 9, color: MUTED, margin: 0, isTextBox: true });
   });
   s.addNotes(
-    "CELLSCAPE gives them that number. You enter your fleet: how big it is, how long it has been running, how mismatched your cells are. It simulates every one of the 5,824 cells in each REON container over twenty years, with and without cell-level control. For a typical 100-megawatt-hour fleet, that's a year and a half more service, 700 thousand dollars of augmentation avoided, 300 thousand dollars of added value and over a thousand tonnes of CO2."
+    "CELLSCAPE shows them. You enter your fleet, and it simulates every cell in every REON container over twenty years, with and without cell-level control."
   );
 }
 
