@@ -2,7 +2,7 @@ import { sixteenCellExample } from "@/lib/sim";
 
 export function Nav() {
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 mx-auto flex max-w-7xl bg-bg/70 backdrop-blur-md items-center justify-between px-6 py-5 md:px-10">
+    <nav className="fixed inset-x-0 top-0 z-50 mx-auto flex max-w-7xl bg-bg/90 items-center justify-between px-6 py-5 md:px-10">
       <a href="#" className="flex items-center gap-2.5 text-sm font-medium tracking-[0.18em]">
         <span className="grid grid-cols-2 gap-[2px]">
           {[1, 1, 1, 0].map((g, i) => (

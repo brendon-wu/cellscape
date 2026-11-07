@@ -112,7 +112,7 @@ export default function Simulator() {
                 />
               </div>
               {isFixed && phase === "done" && (
-                <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 border-t border-amber/40 bg-[#07090a]/85 px-5 py-3 backdrop-blur">
+                <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 border-t border-amber/40 bg-[#07090a]/92 px-5 py-3">
                   <span aria-hidden className="text-amber">■</span>
                   <span className="num text-sm text-amber">
                     STRINGS LOCKED · {Math.round(strandedKWh)} kWh stranded behind weak cells
@@ -120,7 +120,7 @@ export default function Simulator() {
                 </div>
               )}
               {!isFixed && phase === "done" && (
-                <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 border-t border-accent/40 bg-[#07090a]/85 px-5 py-3 backdrop-blur">
+                <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 border-t border-accent/40 bg-[#07090a]/92 px-5 py-3">
                   <span aria-hidden className="text-accent">■</span>
                   <span className="num text-sm text-accent">Weak cells bypassed · the strings kept delivering</span>
                 </div>

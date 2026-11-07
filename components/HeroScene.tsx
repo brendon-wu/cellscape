@@ -80,16 +80,30 @@ function Cells({ progress }: { progress: React.RefObject<number> }) {
     m.instanceColor!.needsUpdate = true;
   }, [soh]);
 
-  // Render on demand: wake the loop on scroll and resize.
+  // Render on demand: wake the loop only when the scroll target differs from what is drawn,
+  // so scrolling the rest of the page never re-renders a settled hero.
   useEffect(() => {
-    const wake = () => invalidate();
-    window.addEventListener("scroll", wake, { passive: true });
-    window.addEventListener("resize", wake);
-    return () => {
-      window.removeEventListener("scroll", wake);
-      window.removeEventListener("resize", wake);
+    // Check on the next frame: this listener can run before the parent's scroll handler updates `progress`.
+    let pending = 0;
+    const wake = () => {
+      if (pending) return;
+      pending = requestAnimationFrame(() => {
+        pending = 0;
+        if (Math.abs((progress.current ?? 0) - shown.current) > 0.0004) invalidate();
+      });
     };
-  }, [invalidate]);
+    const resize = () => {
+      shown.current = -1;
+      invalidate();
+    };
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", resize);
+    return () => {
+      cancelAnimationFrame(pending);
+      window.removeEventListener("scroll", wake);
+      window.removeEventListener("resize", resize);
+    };
+  }, [invalidate, progress]);
 
   useFrame((state, delta) => {
     const target = progress.current ?? 0;
