@@ -2,8 +2,8 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { useLayoutEffect, useMemo, useRef } from "react";
-import { BoxGeometry, Color, EdgesGeometry, InstancedMesh, LineSegments, Object3D, Vector3 } from "three";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { BoxGeometry, Color, EdgesGeometry, InstancedMesh, LineSegments, Object3D } from "three";
 import { healthColor } from "./cellColor";
 
 // CES container twin: 14 racks × 416 cells (8 wide × 26 tall × 2 deep), 2 rows of 7.
@@ -28,31 +28,47 @@ function seededSoh() {
   return soh;
 }
 
+// Per-instance constants, computed once so the frame loop does no trig per cell.
+function layout() {
+  const bx = new Float32Array(N), by = new Float32Array(N), bz = new Float32Array(N);
+  const spreadX = new Float32Array(N), spreadZ = new Float32Array(N), rise = new Float32Array(N), tilt = new Float32Array(N);
+  const jit = new Float32Array(N), drift = new Float32Array(N), rx = new Float32Array(N), ry = new Float32Array(N);
+  for (let r = 0; r < RACKS; r++) {
+    const row = r < 7 ? 0 : 1;
+    const col = r % 7;
+    for (let k = 0; k < PER; k++) {
+      const i = r * PER + k;
+      bx[i] = col * (RW + 1) - 31 + (k % RW);
+      by[i] = (Math.floor(k / RW) % RH) - RH / 2;
+      bz[i] = row * (RD + 1.5) - 2 + Math.floor(k / (RW * RH));
+      spreadX[i] = (col - 3) * 7;
+      spreadZ[i] = (row - 0.5) * 16;
+      rise[i] = Math.sin((col / 6) * Math.PI) * 6;
+      tilt[i] = (col - 3) * 0.08;
+      jit[i] = Math.sin(i * 12.9898) * 3;
+      drift[i] = Math.cos(i * 4.1) * 2.5;
+      rx[i] = Math.sin(i) * 0.6;
+      ry[i] = Math.cos(i) * 0.6;
+    }
+  }
+  return { bx, by, bz, spreadX, spreadZ, rise, tilt, jit, drift, rx, ry };
+}
+
 const ease = (t: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
 
 function Cells({ progress }: { progress: React.RefObject<number> }) {
   const mesh = useRef<InstancedMesh>(null);
   const shell = useRef<LineSegments>(null);
   const lid = useRef<LineSegments>(null);
-  const { camera, size } = useThree();
+  const { camera, size, invalidate } = useThree();
   const dummy = useMemo(() => new Object3D(), []);
   const geo = useMemo(() => new BoxGeometry(0.78, 0.78, 0.78), []);
   const soh = useMemo(seededSoh, []);
-  const base = useMemo(() => {
-    const pos: Vector3[] = [];
-    for (let r = 0; r < RACKS; r++) {
-      const row = r < 7 ? 0 : 1;
-      const col = r % 7;
-      for (let i = 0; i < PER; i++) {
-        const x = i % RW, y = Math.floor(i / RW) % RH, z = Math.floor(i / (RW * RH));
-        pos.push(new Vector3(col * (RW + 1) - 31 + x, y - RH / 2, row * (RD + 1.5) - 2 + z));
-      }
-    }
-    return pos;
-  }, []);
+  const L = useMemo(layout, []);
   const shellGeo = useMemo(() => new EdgesGeometry(new BoxGeometry(66, 28, 8)), []);
   const lidGeo = useMemo(() => new EdgesGeometry(new BoxGeometry(66, 0.6, 8)), []);
   const mobile = size.width < 768;
+  const shown = useRef(-1); // progress value currently drawn
 
   useLayoutEffect(() => {
     const m = mesh.current!;
@@ -64,36 +80,45 @@ function Cells({ progress }: { progress: React.RefObject<number> }) {
     m.instanceColor!.needsUpdate = true;
   }, [soh]);
 
-  useFrame((state) => {
-    const p = progress.current ?? 0;
+  // Render on demand: wake the loop on scroll and resize.
+  useEffect(() => {
+    const wake = () => invalidate();
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", wake);
+    return () => {
+      window.removeEventListener("scroll", wake);
+      window.removeEventListener("resize", wake);
+    };
+  }, [invalidate]);
+
+  useFrame((state, delta) => {
+    const target = progress.current ?? 0;
+    // Ease toward the scroll position so wheel steps glide instead of jumping.
+    const prev = shown.current < 0 ? target : shown.current;
+    let p = prev + (target - prev) * (1 - Math.exp(-Math.min(delta, 0.05) * 7));
+    if (Math.abs(target - p) < 0.0004) p = target;
+    else state.invalidate();
+    if (p === shown.current) return;
+    shown.current = p;
+
     const lift = ease(p / 0.25); // lid lifts
     const fan = ease((p - 0.15) / 0.5); // racks fan out
     const field = ease((p - 0.55) / 0.4); // cells drift into a field
-    const t = state.clock.elapsedTime;
     const m = mesh.current!;
     for (let i = 0; i < N; i++) {
-      const b = base[i];
-      const r = Math.floor(i / PER);
-      const row = r < 7 ? 0 : 1;
-      const col = r % 7;
-      const spreadX = (col - 3) * 7 * fan;
-      const spreadZ = (row - 0.5) * 16 * fan;
-      const rise = Math.sin((col / 6) * Math.PI) * 6 * fan;
-      const jitter = field * Math.sin(i * 12.9898) * 3;
+      const j = field * L.jit[i];
       dummy.position.set(
-        b.x + spreadX + jitter * 0.4,
-        b.y + rise + Math.cos(i * 4.1) * field * 2.5 + Math.sin(t * 0.6 + i) * 0.05 * field,
-        b.z + spreadZ + jitter
+        L.bx[i] + L.spreadX[i] * fan + j * 0.4,
+        L.by[i] + L.rise[i] * fan + L.drift[i] * field,
+        L.bz[i] + L.spreadZ[i] * fan + j
       );
-      dummy.rotation.set(field * Math.sin(i) * 0.6, fan * (col - 3) * 0.08 + field * Math.cos(i) * 0.6, 0);
+      dummy.rotation.set(field * L.rx[i], fan * L.tilt[i] + field * L.ry[i], 0);
       dummy.updateMatrix();
       m.setMatrixAt(i, dummy.matrix);
     }
     m.instanceMatrix.needsUpdate = true;
 
-    if (shell.current) {
-      (shell.current.material as { opacity: number }).opacity = 0.55 * (1 - fan);
-    }
+    if (shell.current) (shell.current.material as { opacity: number }).opacity = 0.55 * (1 - fan);
     if (lid.current) {
       lid.current.position.y = 14.3 + lift * 18;
       (lid.current.material as { opacity: number }).opacity = 0.8 * (1 - fan);
@@ -120,7 +145,12 @@ function Cells({ progress }: { progress: React.RefObject<number> }) {
 
 export default function HeroScene({ progress }: { progress: React.RefObject<number> }) {
   return (
-    <Canvas dpr={[1, 1.75]} camera={{ fov: 35, near: 1, far: 600, position: [0, 18, 95] }} gl={{ antialias: true }}>
+    <Canvas
+      frameloop="demand"
+      dpr={[1, 1.5]}
+      camera={{ fov: 35, near: 1, far: 600, position: [0, 18, 95] }}
+      gl={{ antialias: true, powerPreference: "high-performance" }}
+    >
       <color attach="background" args={["#07090a"]} />
       <fog attach="fog" args={["#07090a", 90, 220]} />
       <Cells progress={progress} />

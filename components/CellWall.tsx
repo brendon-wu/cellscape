@@ -1,8 +1,8 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { BoxGeometry, Color, InstancedMesh, Object3D } from "three";
 import { DEAD, TRAPPED, healthColor } from "./cellColor";
 
@@ -23,6 +23,21 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
   const dummy = useMemo(() => new Object3D(), []);
   const c = useMemo(() => new Color(), []);
   const width = STRINGS * COLS + (STRINGS - 1) * GAP;
+  const invalidate = useThree((s) => s.invalidate);
+  const lastD = useRef(-1);
+
+  // Render on demand: redraw when the discharge level moves or the cells change, otherwise stay idle.
+  useEffect(() => {
+    lastD.current = -1;
+    invalidate();
+    let raf = 0;
+    const poll = () => {
+      if ((drawn.current ?? 0) !== lastD.current) invalidate();
+      raf = requestAnimationFrame(poll);
+    };
+    raf = requestAnimationFrame(poll);
+    return () => cancelAnimationFrame(raf);
+  }, [drawn, invalidate, soh, mode, nMinFrac]);
 
   // Per-string stop point: fixed = weakest cell; cellscape = when active cells drop below nMin.
   const stops = useMemo(() => {
@@ -47,12 +62,12 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
     m.instanceMatrix.needsUpdate = true;
   }, [dummy, width]);
 
-  useFrame((state) => {
+  useFrame(() => {
     const m = mesh.current;
     if (!m) return;
     const d = drawn.current ?? 0;
-    const t = state.clock.elapsedTime;
-    const pulse = 0.75 + 0.25 * Math.sin(t * 4);
+    if (d === lastD.current) return;
+    lastD.current = d;
     for (let i = 0; i < N; i++) {
       const s = Math.floor(i / CPS);
       const h = soh[i];
@@ -64,7 +79,7 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
       } else {
         const soc = Math.max(0, h - used) / h;
         if (locked && soc > 0.02) {
-          c.copy(TRAPPED).multiplyScalar((0.35 + 1.6 * soc) * pulse); // trapped energy
+          c.copy(TRAPPED).multiplyScalar(0.35 + 1.6 * soc); // trapped energy
         } else {
           healthColor(h, c).multiplyScalar((h < 0.8 ? 0.5 : 0.1) + (h < 0.8 ? 1.6 : 0.6) * soc);
         }
@@ -72,7 +87,6 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
       m.setColorAt(i, c);
     }
     m.instanceColor!.needsUpdate = true;
-    m.rotation.y = Math.sin(t * 0.25) * 0.05;
   });
 
   return (
@@ -84,7 +98,7 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
 
 export default function CellWall(props: Props) {
   return (
-    <Canvas dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -4, 175], near: 1, far: 800 }}>
+    <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -4, 175], near: 1, far: 800 }}>
       <color attach="background" args={["#0b0e10"]} />
       <Wall {...props} />
       <EffectComposer>
