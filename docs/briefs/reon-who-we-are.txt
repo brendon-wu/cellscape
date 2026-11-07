@@ -1,0 +1,86 @@
+                                             Who We Are
+REON provides advanced energy storage and intelligent microgrid solutions
+
+              to accelerate the universal adoption of renewable energy.
+
+                                                             Core Offering
+       Storage: Battery | Generation: Renewable Energy | Brains: Energy Management Software
+
+                                                               Why REON
+                                       Patent-pending tech with 2-4x performance
+                                        Decades of battery R&D and EMS expertise
+Led by energy industry veterans behind over 10GW of battery systems deployment and 35+ patents
+                        Vision for a decentralized, software-driven, Net-Zero 2050 future
+
+         MPS                  Mobile, quiet, and emissions-free generator
+                              alternative, Ideal for film sets, events, construction,
+Mobile Power Station          and emergency power.
+
+         7.5kW / 10kWh                                             UL 1741, UL 1973, UL 9540
+         120V / 240V 1
+
+          FES                 Modular, VPP-ready battery energy system for
+                              residential and small commercial sites, enabling
+ Flex Energy System           seamless backup, energy cost reduction, and grid
+                              revenue.
+     21-25kW / 50kWh
+      208V 3 / 240V 1                             UL 1741SA, UL 1741SB, UL 1973, UL 9540, UL 9540A
+
+          EBS                 World's first UL-certified sodium-ion battery energy
+                              storage system, boasting unmatched chemical safety.
+Energy Block System           Excels in harsh environmental conditions with a wide
+                              temperature range. Reduction of installation and
+       30 kW / 60 kWh         service costs through a modularized design.
+             208V 3
+                                                          UL 1741-SB, UL 1973, UL 9540, UL 9540A
+
+OES100/ OES300                High-capacity modular design for various C&I
+                              applications. Integrated with a hybrid inverter and
+Optim Energy System           high-performance battery cabinet. Flexibly supports
+                              different configurations to meet customers' needs.
+30 -60-120kW / 66-313kWh
+       208V /480V 3                                          UL 1741, UL 1973, UL 9540, UL 9540A
+
+               CES            Turnkey solution in a 20-ft container, supporting utility             reoncorp.com information@reoncorp.com
+                              and large C&I applications. Ideal for microgrids, grid
+Containerized Energy System   services, or large-scale backup.
+
+          2.5MW / up to 5MWh                                       UL 1973, UL 9540, UL 9540A
+                    480V 3
+                              Software that optimizes microgrid power flow through
+               EMS            predictive analytics, enhancing resilience, supporting
+                              critical loads, and maximizing ROI by leveraging
+ Energy Management System     available incentives and intelligent control strategies.
+                           Solutions
+
+EMS
+
+Grid
+                                                             BESS
+
+Solar                                                                    Control your REON BESS from
+                                                                               any device with EMS
+                                                                   Load
+                                                                            Grid Services
+                             Applications
+                                                                                        Enable advanced grid support
+Electrical Bill Saving                                                                  through frequency regulation,
+                                                                                        demand response, and energy
+                  Reduce electricity costs by                                           arbitrage.
+                  automatically discharging
+                  during peak demand periods                               Backup Power
+                  to avoid high utility charges.
+                                                                                        Provide reliable power
+    Solar + Off-grid Integration                                                        backup to critical operations
+                                                                                        during grid failures, ensuring
+                               Support clean energy goals                               business continuity.
+                               by storing excess solar power
+                               and ensuring power supply                   Solar Pairing
+                               without grid access.
+
+                                     Use Cases
+
+Commercial & Industrial Facilities
+
+Communities & Resiliency                                                 EV Charging & Load optimization  reoncorp.com information@reoncorp.com
+

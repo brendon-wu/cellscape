@@ -1,0 +1,180 @@
+                                                                                                                                               REON | MIT ENERGY & CLIMATE HACK 2026
+
+Beyond the Weakest Cell: Making Every Cell Count
+
+MIT Energy & Climate Hack 2026 | REON
+
+ THE CHALLENGE
+
+ Build an innovative tool that demonstrates how to use cell-level intelligence and control to optimize
+ battery performance, extend system lifetime (cycle life), and unlock new opportunities, while
+ quantifying the potential economic and environmental value in a specific real-world application.
+
+How to use this Brief:
+Use this brief to get oriented before building your tool. It introduces the battery concepts behind the challenge,
+shows why one weak cell can limit a string, and explains the simplified capacity and retirement example.
+Then use the exploration prompts and readings to choose a real application and estimate its economic or
+environmental value.
+There's a lot to take in, but we're excited to see what some of the world's brightest students will do with this
+challenge--and we hope you have fun exploring it! : )
+
+Battery Basics in Brief
+
+    · Battery System Structure. A cell is one electrochemical unit. Cells are combined in series and/or
+         parallel into a module; modules form a pack. A string is a series-connected path through cells or
+         modules. A battery energy storage system adds power conversion, controls, thermal management, and
+         other equipment around battery packs. The exact hierarchy varies by design.
+
+    · State of charge (SOC). Think about your Phone battery. How full a cell is now relative to its present
+         usable charge capacity: SOC = remaining charge ÷ current full-charge capacity × 100%. A cell at 100%
+         SOC may still be aged, i.e, you can always charge you phone up to 100%, but lasting time is shorter.
+
+    · State of health (SOH). Think about when your phone battery retire / need to be replaced. Here,
+         capacity-based SOH = current full-charge capacity ÷ beginning-of-life capacity × 100%. A 70 Ah cell
+         that began at 100 Ah has 70% SOH, even when fully charged.
+
+    · Other attributes. Voltage, current, temperature, resistance, power, cycle count, and history.
+    · Battery management system (BMS). Electronics and software that monitor cell or pack conditions,
+
+         estimate states, protect operating limits, and manage charging, discharge, and balancing.
+
+Why One Cell Can Limit a String - Weakest Cell Limitation
+
+In a fixed series string, the same current passes through every cell. If a cell reaches its allowed charge or
+discharge limit first, the string must stop that operation even when other cells have room to continue. Cell
+
+                                                                                                         HACKER SUPPLEMENTARY BRIEF · 1
+                                                                                                                                               REON | MIT ENERGY & CLIMATE HACK 2026
+
+balancing can reduce differences in SOC, but it cannot restore capacity lost to aging. The size of the bottleneck
+depends on the cell states, operating limits, and balancing design.
+
+A 16 Cell Capacity Example
+Assume 16 cells were each 100 Ah at beginning of life. Today, 15 cells hold 85 Ah and one holds 70 Ah. All
+begin fully charged, have comparable voltage limits, and form a fixed series string without effective energy
+redistribution during the modeled discharge. Ignore resistance, temperature, and voltage variation for this
+illustration.
+
+  CELL AVERAGE
+
+ Average cell SOH = (15 × 85% + 1 × 70%) ÷ 16 = 84.06%.
+
+  FIXED SERIES LIMIT
+
+ Illustrative string capacity = min(85, ..., 85, 70) Ah = 70 Ah, or 70% of its original 100 Ah capacity
+
+The 14.06 percentage point gap compares the average cell's capacity retention with the string's simplified
+capacity retention. Under the equal-capacity assumptions, 70 ÷ 84.06  83.3% is an illustrative ratio of string
+capacity to average cell capacity.
+
+What Cell Level Control Changes
+In REON's architecture, we have sensing and switching at
+each cell. Selective bypass can let a completed or faulty cell
+leave the active path while other cells continue, when
+voltage, power, thermal, and safety requirements allow. This
+turns the choice of which cells participate and when into a
+tool-design question. The upper bound suggested by
+summing cell capacities is conceptual; a real design must
+maintain a valid series voltage and meet all operating
+constraints.
+
+  MODELING EXPLORATION
+
+ Given each cell's capacity, SOC, health, and limits, how
+ much more usable service could be delivered than a
+ clearly defined fixed-string baseline?
+
+Capacity Limits and Retirement Decisions
+
+A battery reaches an application-specific end-of-service point when it can no longer meet the required energy,
+power, reliability, or safety duty. For a simple capacity threshold, define retention under the same reference test
+conditions as:
+
+                                                                      !"!()
+                                               !"!() = !"!(Beginning of Life)
+If an application requires at least 70% capacity retention, the system falls below that requirement when
+!"!() < 70%.
+    · Q denotes usable discharge capacity (Ah), sys means system level.
+    · The numerator is the capacity at time t; the denominator is its beginning-of-life capacity.
+
+                                                                                                         HACKER SUPPLEMENTARY BRIEF · 2
+                                                                                                                                               REON | MIT ENERGY & CLIMATE HACK 2026
+
+    · In the 16-cell example, fixed-string capacity falls to 70% while average cell SOH remains 84.06%. This
+         illustrative threshold does not require retirement: the operator may accept reduced service, maintain,
+         augment, or replace the asset. Real decisions should use delivered energy (kWh) and power (kW) at a
+         defined system boundary, rather than infer AC output from the Ah example.
+
+    · An 80% capacity threshold is common for EVs; stationary storage may use a lower threshold like 70%.
+         The applicable cutoff depends on the duty, warranty, and service obligation.
+
+Make the Value Measurable
+
+Compare the same application, system cycle life, safety constraints, and cost related with and without cell-level
+control. Think about the baseline, control case, and sensitivity to uncertain assumptions. Examples areas of
+interest but not limited are:
+
+  · Usable capacity or energy recovered (Ah or kWh)
+  · Additional service cycles or years
+  · Economic value
+  · Environmental value
+
+A Research Starting Point
+A 2026 Nature Energy study quantified the effect of cell-to-cell inconsistency in real-world EV fleets. Read the paper. It
+motivates the problem, yet its EV results are not performance claims for REON or for stationary storage. Teams are
+encouraged to test other applications, including data-center backup and grid-scale storage, and we are also welcome to
+other innovative fields that you think your idea could apply for.
+
+What Teams Can Assume: Given Capabilities
+
+    · Individual-cell monitoring, including voltage, temperature, SOC, SOH, capacity, resistance, open-circuit
+         voltage and performance history data.
+
+    · Switching and selective bypass can include or remove a cell from the active string, subject to system
+         limits. You can choose when to activate or bypass cells.
+
+Build a tool on top of these capabilities. You do not need to design the switch hardware or solve low-level
+control algorithms.
+
+Directions to Explore
+
+These directions are starting points, not boundaries. Choose any real-world application where cell-level
+intelligence and control could change a useful decision. Build a tool that explores the idea based on a specific
+real-world application, compares it with a clear baseline, and quantifies at least one economic or environmental
+outcome. Feel free to add your assumptions and work on that.
+
+  · Capacity recovery: estimate how much a fixed string strands and what cell-level control could make usable
+    in a chosen application.
+
+  · Lifetime optimization: schedule participation to delay an application-specific capacity or service limit while
+    respecting cell stress and safety constraints.
+
+  · Economic or environmental impact: quantify the difference against a conventional baseline for one
+    stakeholder, such as an asset owner, operator, or battery integrator.
+
+  · Possible Applications: retired EV packs, grid-scale storage, data-center battery backup, and other uses that
+    benefit from uneven cell health.
+
+                                                                                                         HACKER SUPPLEMENTARY BRIEF · 3
+                                                                                                                                               REON | MIT ENERGY & CLIMATE HACK 2026
+
+Starter Reading and References
+
+New to the topic? Read the battery primer and BMS introduction first. The research paper and industry post offer
+examples of questions to test in your own application.
+[1] Official challenge. REON Technology, MIT Energy & Climate Hack 2026 challenge slides, supplied with this
+
+     brief.
+[2] Battery Storage. National Renewable Energy Laboratory and USAID, Grid-Scale Battery Storage: Frequently
+
+    Asked Questions (2019), pp. 1-2. Power, energy, duration, cycle life, and SOC. Read the primer.
+[3] EV research. Zhou, L., Bian, X., Zhang, Y., et al., "Quantifying the impact of cell-to-cell inconsistency on electric
+
+    vehicle battery degradation and utilization," Nature Energy (2026). Read the paper.
+[4] Industry perspective. LinkedIn post on how industry suffers from cell inconsistency. View the post.
+[5] BMS introduction. MathWorks, "Developing Battery Systems with Simulink and Simscape." See "Battery
+
+    Management System Algorithms" for BMS functions, state estimation, and cell balancing. Read the guide.
+
+                                                                                                         HACKER SUPPLEMENTARY BRIEF · 4
+

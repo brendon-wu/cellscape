@@ -1,0 +1,430 @@
+  Join Our Discord  MIT ENERGY & CLIMATE 2026    Hack Schedule
+      Server for                               and Building Guide
+                    HACKATHON
+Important Updates!
+
+                    We will begin at 630 PM
+Advancing discussion and collaboration on the world's most
+                pressing energy & climate challenges
+
+600+       4,000+        25,000+           50+
+
+   ACTIVE        WEEKLY      SOCIAL MEDIA  STUDENT
+  STUDENT    NEWSLETTER       FOLLOWERS     EVENTS
+ MEMBERS    SUBSCRIBERS                    PER YEAR
+
+The MIT Energy & Climate Club MITEC) is a hub for thought leadership and relationship building.
+  We are the largest student club at the world's leading technical institute and connect students
+
+from all degree programs, alumni, founders, industry, and those from the greater community who
+                                       are passionate about energy and climate.
+Meet the Team
+
+                              MANAGING DIRECTORS
+
+                         Gaby Cornejo  Sean Balfour  Steph Xu
+OPERATIONS DIRECTORS
+                                       SPONSORSHIP DIRECTORS
+
+Cameron Fish Sneha Acharya             Beatriz Baigorri Conor McManamy Keira Boone
+A HUGE thank you to our sponsors!!
+                       HACK SCHEDULE
+
+                                                                 Hack Schedule and
+                                                                       Directions
+
+Friday, Nov 6          Saturday, Nov 7            Sunday, Nov 8
+
+6:30 PM                8:30 AM - 10 PM            9:00 AM
+Opening Ceremony       Hacker Space Open          Final Deliverables Due
+
+8:00 PM                9 AM - 12 PM, 1 PM - 4 PM  11:00 AM
+Team Sign-ups Due      Sponsor Coffee Chats       Finalists Announced
+
+9:00 PM                12:00 PM                   12:30 PM
+Challenge Assignments  COMSOL Seminar             Finalist Pitches
+
+                       6:00 PM                    3:00 PM
+                       Dinner                     Winner Announcement & Closing
+                                                  Ceremony
+Journey Towards Energy Access:
+
+Energy access in sub-Saharan Africa,
+and what a society can afford to build
+
+Matthew Orosz
+
+One Power, Founder and CEO
+Hey, MIT.
+
+More energy. Less emissions. Built in Texas.
+
+TEX-E FELLOWSHIP | APPLICATIONS NOW
+OPEN
+
+Trinity Price
+
+Fellowship Program Manager, TEX-E
+WHY TEXAS?                                                1 A laboratory for energy innovation
+
+The energy transition is                                          From renewables and storage to hydrogen, geothermal,
+being built in Texas.                                             and industrial decarbonization, Texas offers
+                                                                  opportunities to develop and deploy emerging
+ Texas leads the nation in wind and solar generation,             technologies.
+ while hosting one of the world's largest concentrations
+ of energy companies, infrastructure, and industrial      2 Where startups meet customers
+ expertise
+                                                                  Connect with the energy companies, industrial
+                                                                  customers, investors, and entrepreneurs who can help
+                                                                  turn new technologies into businesses.
+
+                                                          3 A gateway to careers in energy
+
+                                                                  Explore opportunities across startups, established
+                                                                  companies, investment, and the broader energy
+                                                                  innovation ecosystem.
+What is the TEX-E
+Fellowship?
+
+A year-long fellowship
+connecting students
+with the people and
+companies shaping
+the future of energy.
+
+ TEX-E Fellows engage in a "real world" curriculum in
+ energy innovation,
+ building on ideas that produce more energy with less
+ carbon.
+FROM CAMBRIDGE TO HOUSTON                                                                 TEX-E Prize at CERAWeek, Houston
+
+Why join TEX-E from MIT?                                                                  TEX-E Fellows found startups at 3x the
+                                                                                          national rate
+  1 A community of energy innovators in Texas
+                                                                                          3x                         110
+             Build alongside Fellows from MIT, UT Austin, Texas A&M, Rice, University of
+             Houston and Prairie View A&M, connected to the startups, investors and       the national founder rate  TEX-E Fellowship alumni
+             companies shaping energy's future.                                                                      in the workforce
+
+  2 Experience the Texas energy ecosystem
+
+             Financial support to travel to Houston for key TEX-E events throughout the
+             Fellowship year.
+
+  3 Learn entrepreneurship by doing it
+
+           A year-long curriculum built on MIT's Disciplined Entrepreneurship: speakers,
+           pitch practice, corporate site visits, accelerators and internships.
+
+  4 A strong career signal
+
+           Engaging with the Texas energy ecosystem sends a powerful message that
+           you're serious about energy, for startups as well as larger industry players
+                                                                                Scan to apply
+
+Curious about energy
+innovation?
+Apply now.
+
+Part A priority deadline: December 1, 2026
+Part A regular deadline: January 15, 2027
+Apply as soon as possible: priority Part B is due December
+8.
+
+tex-e.org/fellowship
+
+Open to MIT undergraduate, graduate and professional students in any major who
+will be enrolled during 2027-28.
+     And now for our
+challenge statements...
+Drumroll please...
+
+            
+    Are there scenarios where phase
+    change materials PCMs can
+    reduce total cost compared with
+    traditional insulation alone?
+
+#1  Representatives
+
+    Michael Nourie
+
+    Venkata Krisshna
+
+    Ajit Mohekar
+        COMSOL             Michael Mayer
+
+    MIT Climate Hackathon
+
+   and COMSOL
+
+   Multiphysics®
+
+Michael Mayer
+    Should a heat pump be undersized
+    with supplemental heating or sized for
+    extreme weather, and which offers the
+    best balance of cost and carbon
+    emissions?
+
+#2  Representatives
+
+    Ajit Mohekar
+
+    Venkata Krisshna
+
+    Michael Nourie
+Ajit Mohekar
+Design a solution that keeps robots, heavy
+equipment and crews connected and
+coordinated while building renewable
+energy sites in rural areas without reliable
+connectivity.
+
+Representatives
+
+Puranjay Prashanth
+Anthony Reyna
+Build a tool that demonstrates how to use
+cell-level intelligence and control to optimize
+battery performance, extend system lifetime,
+and unlock new opportunities, while quantifying
+the economic and environmental value in a
+specific real-world application.
+
+Representatives
+
+Tim Ren
+Kayla Chen
+REON                                                               Massachusetts  MIT ENERGY &
+                                                                   Institute of
+                                                                   Technology     CLIMATE HACK
+
+                                             
+
+CHALLENGE  MIT ENERGY & CLIMATE HACK 2026
+
+Beyond the Weakest Cell
+
+Making Every Cell Count
+
+Presented by Tim Ren Co-founder & CTO, REON
+
+                                             ONE SPOKE = ONE CELL
+
+REON × MIT ENERGY & CLIMATE HACK 2026
+Setting aside technology development, what
+actions should industry take to secure our
+freshwater supplies in 2050 and beyond?
+
+Representatives
+
+Quantum Wei
+Can you build a tool that tackles one major
+bottleneck in deploying commercial battery
+storage so teams can manage tens to
+hundreds of projects at once?
+
+Representatives
+
+Jorge Nin
+Donald Groh
+Lenders in Latin America finance thousands of
+farmers, but once a loan is disbursed they have
+little visibility into what happens in the field. Build
+a platform that uses satellite and weather data to
+show a lender which farm loans in its portfolio are
+under climate stress, and why.
+
+Representatives
+
+Fernando Yu
+Justin Muñoz
+        docs.google.com - To exit full screen, press esc
+
+SUYANA
+
+       CHALLENGE TRACK
+
+Climate risk monitor
+
+for agricultural loans
+
+MIT Energy & Climate Hack 2026
+
+                                                                                                                                                                                                    November 2026
+                                                                                                                                                                                       suyana.io
+This years challenges!
+
+Are there scenarios where phase change       Design a solution that keeps           Build a tool that demonstrates how
+materials (PCMs) can reduce total cost       robots, heavy equipment and crews      to use cell-level intelligence and
+compared with traditional insulation alone?  connected and coordinated while        control to optimize battery
+                                             building renewable energy sites in     performance, extend system
+Should a heat pump be undersized with        rural areas without reliable           lifetime, and unlock new
+supplemental heating or sized for extreme    connectivity.                          opportunities.
+weather, and which offers the best
+balance of cost and carbon emissions?
+
+Build a platform that uses satellite and     Can you build a tool that tackles one  Setting aside technology
+weather data to show a lender which          major bottleneck in deploying          development, what actions should
+farm loans in its portfolio are under        commercial battery storage so teams    industry take to secure our freshwater
+climate stress, and why.                     can manage tens to hundreds of         supplies in 2050 and beyond?
+                                             projects at once?
+Team Formation + Challenge Preference Ranking
+
+Form Teams of                  Rank All 7
+  2  4 People                 Challenges
+
+               Discuss Your     Well Match
+               Interests and  Your Team to a
+
+                 Strengths       Challenge!
+
+                               YOU MUST WORK ON THE CHALLENGE
+                              ASSIGNED. DO NOT SUBMIT RESPONSES
+
+                                      TO ANY OTHER CHALLENGE.
+Submission Guidelines                                       Judging Rubric
+
+            Required Format                     Scope       Interdisciplinary Feasibility
+                                                              Collaboration
+ Google Slides presentation
+                                                Creativity  Potential         Pitch
+        Even if your challenge requires                      Impact         Delivery
+        creation of other deliverables, please                              (finals)
+        create a presentation and integrate or
+        link these within your presentation.
+
+        46 slides, you will be dinged for
+        exceeding your limits.
+
+                 AND / OR
+  2Minute Video Pitch
+
+       You will be dinged for exceeding your
+       time.
+Final Pitch Guidelines                                      Judging Rubric
+
+            Required Format                     Scope       Interdisciplinary Feasibility
+                                                              Collaboration
+ Google Slides presentation
+                                                Creativity  Potential         Pitch
+        Even if your challenge requires                      Impact         Delivery
+        creation of other deliverables, please
+        create a presentation and integrate or
+        link these within your presentation
+
+ 5Minute Pitch
+
+        You will be dinged for exceeding your
+        time, with a hard cutoff at 6 minutes.
+                    So, How Do I Win?
+
+All video or PowerPoint submissions are considered in the semi-final round.
+Two teams per challenge move to the final round.
+
+#1 Phase change materials       One Winner per                                Freshwater supply in 2050
+                                    Challenge!                                  Battery storage at scale
+    #2 Heat pump sizing                                                        Farm loan climate stress
+        Connected site                  + 2 special awards
+          construction          Eligible for all challenge tracks
+
+ Cell-level battery control  Most Scalable Impact by COMSOL
+                                   & Best Pitch by EXOWATT
+
+                             TEAM WITH THE BEST NAME WINS SOMETHING TOO ....
+First-Place Prizes: $8,400 Total
+
+$1,000              $700
+
+    Each of the 7       2 Special
+Challenge Winners  Sponsor Awards
+
+                             Most Scalable Impact         Best Pitch
+
+                                               by COMSOL   by Exowatt
+
+TEAM WITH THE BEST NAME WINS SOMETHING TOO ....
+            Challenge Ranking Submission
+
+              One person from each team 24 members) must submit
+
+                   one Google Form by 830PM with ranking of challenge
+                   statement preference.
+
+              If you are currently solo and would like to be placed on a
+
+                   team, please also fill out the form
+
+Next Steps
+
+            Link will also be posted on the discord
+          MIT ENERGY & CLIMATE 2026
+
+     HACKATHON
+
+Team Norms and
+        Goals
+Part 1 Icebreakers and Personal Goals 5 minutes)
+
+     Each member share:
+           Their name
+           One skill they bring to the hackathon
+           A personal goal for the hackathon (e.g. learn
+               something new, create a functioning prototype, etc!
+           Favorite natural space :)
+Part 2 Goal and Vision Setting 10 minutes)
+
+     Define the shared goals for the team! Discuss:
+
+           What does success look like for this hackathon?
+
+           Does your team prioritize learning, winning, building
+               something impactful, or something else?
+
+     Write in your shared document:
+
+           23 specific, measurable goals
+
+                 "Complete a prototype of our project idea."
+                 "Submit a pitch deck that clearly articulates our
+
+                     solution."
+                 "Ensure every team member contributes in a meaningful
+
+                     way."
+Part 3 Establish Norms and Roles 10 minutes)
+
+    Discuss:
+
+          Roles: Are there any role breakdowns? Who will lead coding,
+              design, presentations, etc.?
+
+          Communication: How will they communicate and keep everyone
+              updated? (e.g., Slack, group texts).
+
+          Time Management: When will they check in as a team, and how
+              will they divide tasks?
+
+          Conflict Resolution: What will they do if theres a disagreement?
+    Write down:
+
+          35 norms (e.g., "Listen to everyones ideas, "Decisions are
+              made by majority vote).
+Part 4 Share a Team Motto or Name 5 minutes)
+
+     Create a team name that reflects your teams vision!
+     Please insert your team name on the challenge statement
+
+         assignment excel that will be shared in the Discord channel
+Thank You!
+ Things to keep in mind!
+
+- If you havent already download the MIT
+    Atlas app and request building access
+
+                                                                            MIT Atlas app
+     Team and
+    Challenge
+Preference Form
+
