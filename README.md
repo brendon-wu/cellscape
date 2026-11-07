@@ -1,7 +1,5 @@
 # CELLSCAPE
 
-**One weak cell strands a whole battery.** CELLSCAPE models what REON-style cell-level sensing and bypass recover for the owner of a grid battery: years of service, dollars and tonnes of CO₂.
-
 Live: https://cellscape-beta.vercel.app
 
 **REON’s savings, made visible:** simulate your battery and see exactly what cell-level control gives back.
