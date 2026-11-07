@@ -37,7 +37,7 @@ const title = (s, text, opts = {}) =>
   s.addText("CELLSCAPE", { x: 0.6, y: 3.45, w: 8.8, h: 0.9, fontFace: FONT, fontSize: 54, color: TEXT, charSpacing: 2, margin: 0, isTextBox: true });
   s.addText(
     [
-      { text: "REON’s savings, made visible. ", options: { color: GREEN } },
+      { text: "REON’s savings, made visible. ", options: { color: RED } },
       { text: "Simulate your battery and see exactly what cell-level control gives back.", options: { color: TEXT } },
     ],
     { x: 0.6, y: 4.3, w: 8.8, h: 0.65, fontFace: FONT, fontSize: 17, margin: 0, valign: "top", isTextBox: true }
@@ -80,7 +80,10 @@ const title = (s, text, opts = {}) =>
     s.addText(c.big, { x: x + 0.35, y: 2.4, w: 3.5, h: 1.0, fontFace: FONT, fontSize: 24, color: c.bigColor, margin: 0, valign: "top", isTextBox: true });
     s.addText(c.sub, { x: x + 0.35, y: 3.45, w: 3.5, h: 0.4, fontFace: FONT, fontSize: 13, color: MUTED, margin: 0, valign: "top", isTextBox: true });
   });
-  s.addText("Battery owners approve purchases on spreadsheets. Without a number for their own fleet, the value of cell-level control stays invisible.", {
+  s.addText([
+    { text: "Battery owners approve purchases on spreadsheets. Without a number for their own fleet, the value of cell-level control ", options: { color: TEXT } },
+    { text: "stays invisible.", options: { color: RED } },
+  ], {
     x: 0.6, y: 4.3, w: 8.7, h: 0.6, fontFace: FONT, fontSize: 14, color: TEXT, margin: 0, valign: "top", isTextBox: true,
   });
   s.addNotes(
@@ -141,7 +144,11 @@ const title = (s, text, opts = {}) =>
 {
   const s = pres.addSlide({ masterName: "DARK" });
   eyebrow(s, "Live demo", 0.6, 0.5);
-  title(s, "Your battery, with and without REON");
+  title(s, [
+    { text: "Your battery, with and ", options: { color: TEXT } },
+    { text: "without", options: { color: RED } },
+    { text: " REON", options: { color: TEXT } },
+  ]);
   s.addImage({ path: path.join(ASSETS, "simulator.jpg"), x: 0.6, y: 1.6, w: 5.9, h: 3.35, objectName: "Simulator screenshot" });
   s.addText("Try it", { x: 6.85, y: 1.65, w: 2.6, h: 0.3, fontFace: FONT, fontSize: 13, color: MUTED, margin: 0, isTextBox: true });
   s.addText("cellscape-beta.vercel.app", {

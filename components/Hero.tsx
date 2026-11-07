@@ -10,7 +10,7 @@ const BEATS = [
     at: 0,
     eyebrow: "CELLSCAPE · built for REON",
     title: "REON’s savings, made visible.",
-    body: "Simulate your battery and see exactly what cell-level control gives back.",
+    body: "",
   },
   {
     at: 0.33,
@@ -68,20 +68,20 @@ export default function Hero() {
             >
               <p className="eyebrow mb-4">{b.eyebrow}</p>
               <h1
-                className={`font-light tracking-[-0.035em] ${i === 0 ? "text-5xl leading-[0.98] md:text-[88px]" : "text-4xl leading-[1.02] md:text-6xl"}`}
+                className={`font-light tracking-[-0.035em] ${i === 0 ? "text-6xl leading-[0.95] md:text-[112px]" : "text-4xl leading-[1.02] md:text-6xl"}`}
               >
                 {i === 0 ? (
                   <>
                     REON’s savings,
                     <br />
-                    <span className="text-accent">made visible.</span>
+                    <span className="text-red">made visible.</span>
                   </>
                 ) : (
                   b.title
                 )}
               </h1>
               {b.body && <p className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">{b.body}</p>}
-              {(i === 0 || i === 2) && (
+              {i === 2 && (
                 <a
                   href="#simulator"
                   className="pointer-events-auto mt-7 inline-flex items-center gap-3 rounded-full bg-accent px-6 py-3 text-sm font-medium text-bg transition hover:brightness-110"
