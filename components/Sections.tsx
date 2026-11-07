@@ -132,14 +132,14 @@ export function Difference() {
         <div className="hidden gap-2 border-b border-line bg-surface px-6 py-3 md:grid md:grid-cols-[180px_1fr_1fr]">
           <span className="eyebrow">Who</span>
           <span className="eyebrow">What they do</span>
-          <span className="eyebrow !text-accent">What CELLSCAPE adds</span>
+          <span className="eyebrow !text-red">What CELLSCAPE adds</span>
         </div>
         {rows.map((r, i) => (
           <div key={r[0]} className={`grid gap-2 px-6 py-5 md:grid-cols-[180px_1fr_1fr] ${i ? "border-t border-line" : ""}`}>
             <span className="font-medium">{r[0]}</span>
             <span className="text-muted">{r[1]}</span>
             <span className="text-accent">
-              <span className="eyebrow mr-2 !text-accent/70 md:hidden">CELLSCAPE adds</span>
+              <span className="eyebrow mr-2 !text-red md:hidden">CELLSCAPE adds</span>
               {r[2]}
             </span>
           </div>

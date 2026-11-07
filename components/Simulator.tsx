@@ -250,7 +250,7 @@ export default function Simulator() {
           disabled={phase === "running"}
           className="discharge-btn h-14 rounded-full bg-accent px-8 text-sm font-semibold text-bg transition hover:brightness-110 disabled:opacity-60 md:min-w-[230px]"
         >
-          {phase === "running" ? "Discharging…" : phase === "done" ? "Discharge again ↻" : "Discharge both batteries ⚡"}
+          {phase === "running" ? "Running…" : phase === "done" ? "Run again" : "Run the battery simulations"}
         </button>
       </div>
 
