@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { BoxGeometry, Color, InstancedMesh, Object3D } from "three";
-import { DEAD, TRAPPED, healthColor } from "./cellColor";
+import { CHARGE, CULPRIT, DEAD, TRAPPED, healthColor } from "./cellColor";
 
 const STRINGS = 14, COLS = 8, ROWS = 52, CPS = COLS * ROWS;
 const N = STRINGS * CPS;
@@ -74,15 +74,18 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
       const stop = stops[s];
       const locked = d >= stop && d > 0;
       const used = Math.min(d, stop);
-      if (mode === "cellscape" && h <= used) {
-        c.copy(DEAD); // emptied and bypassed; string keeps running
+      const soc = Math.max(0, h - used) / h;
+      if (d === 0) {
+        // At rest: color by health so the weak cells stand out.
+        healthColor(h, c).multiplyScalar(h < 0.8 ? 2.1 : 0.7);
+      } else if (mode === "fixed" && locked && h <= stop + 1e-6) {
+        c.copy(CULPRIT).multiplyScalar(2.4); // the weak cell that stopped this string
+      } else if (mode === "cellscape" && h <= used) {
+        c.copy(DEAD); // emptied and bypassed; the string keeps running
+      } else if (locked && soc > 0.02) {
+        c.copy(TRAPPED).multiplyScalar(0.3 + 1.7 * soc); // energy stranded in healthy cells
       } else {
-        const soc = Math.max(0, h - used) / h;
-        if (locked && soc > 0.02) {
-          c.copy(TRAPPED).multiplyScalar(0.35 + 1.6 * soc); // trapped energy
-        } else {
-          healthColor(h, c).multiplyScalar((h < 0.8 ? 0.5 : 0.1) + (h < 0.8 ? 1.6 : 0.6) * soc);
-        }
+        c.copy(CHARGE).multiplyScalar(0.06 + 1.15 * soc); // draining charge
       }
       m.setColorAt(i, c);
     }
@@ -98,7 +101,7 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
 
 export default function CellWall(props: Props) {
   return (
-    <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -4, 175], near: 1, far: 800 }}>
+    <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -1, 106], near: 1, far: 800 }}>
       <color attach="background" args={["#0b0e10"]} />
       <Wall {...props} />
       <EffectComposer>

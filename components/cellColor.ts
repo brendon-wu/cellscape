@@ -21,3 +21,5 @@ export function healthColor(soh: number, out: Color) {
 
 export const DEAD = new Color("#1a2023");
 export const TRAPPED = new Color("#f5b83d");
+export const CHARGE = new Color("#3ddc84");
+export const CULPRIT = new Color("#e23b3b");
