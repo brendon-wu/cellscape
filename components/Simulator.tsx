@@ -146,15 +146,29 @@ export default function Simulator() {
   useEffect(() => {
     // Fetch and evaluate the cell-wall code while the browser is idle, so mounting later only creates the context.
     const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
-    const prefetch = () => void import("./CellWall");
-    if (w.requestIdleCallback) w.requestIdleCallback(prefetch);
-    else setTimeout(prefetch, 1500);
+    // Then mount them during idle time too, so a jump to the simulator never pays for WebGL setup on arrival.
+    const idle = (cb: () => void) => (w.requestIdleCallback ? w.requestIdleCallback(cb) : setTimeout(cb, 1500));
+    let alive = true;
+    let lastScroll = 0;
+    const onScroll = () => (lastScroll = performance.now());
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Mount only while the page is still, so the setup never interrupts a scroll.
+    const mountWhenStill = () => {
+      if (!alive) return;
+      if (performance.now() - lastScroll < 400) setTimeout(mountWhenStill, 300);
+      else idle(() => alive && setWallsOn((n) => n || 1));
+    };
+    idle(() => import("./CellWall").then(() => setTimeout(mountWhenStill, 1200)));
 
     const el = lanesRef.current;
     if (!el) return;
     const io = new IntersectionObserver(([e]) => e.isIntersecting && setWallsOn((n) => n || 1), { rootMargin: "900px 0px" });
     io.observe(el);
-    return () => io.disconnect();
+    return () => {
+      alive = false;
+      window.removeEventListener("scroll", onScroll);
+      io.disconnect();
+    };
   }, []);
   // Live readouts, written straight to the DOM each frame to avoid re-rendering React at 60 fps.
   const out = {
