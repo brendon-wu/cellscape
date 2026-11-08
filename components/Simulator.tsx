@@ -43,7 +43,16 @@ function laneModel(soh: Float32Array, mode: "fixed" | "cellscape") {
 }
 
 function RetentionChart({ fixed, cs, year, obligation }: { fixed: number[]; cs: number[]; year: number; obligation: number }) {
-  const W = 560, H = 210, P = 28;
+  // On phones, use a narrower, taller drawing so labels stay legible once the SVG scales down.
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = matchMedia("(max-width: 640px)");
+    const on = () => setNarrow(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  const W = narrow ? 320 : 560, H = narrow ? 230 : 210, P = 28;
   const lo = 0.7, hi = 1.0;
   const x = (i: number) => P + (i / (fixed.length - 1)) * (W - P * 2);
   const y = (v: number) => H - P - ((v - lo) / (hi - lo)) * (H - P * 2);
@@ -81,13 +90,13 @@ function RetentionChart({ fixed, cs, year, obligation }: { fixed: number[]; cs: 
       {[0.7, 0.8, 0.9, 1].map((v) => (
         <g key={v}>
           <line x1={P} x2={W - P} y1={y(v)} y2={y(v)} stroke="#1c2326" />
-          <text x={4} y={y(v) + 4} fill="#8a9592" fontSize="10" className="num">
+          <text x={2} y={y(v) + 4} fill="#8a9592" fontSize={narrow ? 9 : 10} className="num">
             {Math.round(v * 100)}%
           </text>
         </g>
       ))}
       <line x1={P} x2={W - P} y1={y(obligation)} y2={y(obligation)} stroke="#f5b83d" strokeDasharray="4 4" />
-      <text x={W - P} y={y(obligation) - 6} fill="#f5b83d" fontSize="10" textAnchor="end" className="num">
+      <text x={W - P} y={y(obligation) - 6} fill="#f5b83d" fontSize={narrow ? 9 : 10} textAnchor="end" className="num">
         CONTRACT FLOOR {Math.round(obligation * 100)}%
       </text>
       <g key={dataKey} className={seen ? "chart-in" : "chart-pre"}>
@@ -109,7 +118,7 @@ function RetentionChart({ fixed, cs, year, obligation }: { fixed: number[]; cs: 
       <circle r="4.5" fill="#e23b3b" style={{ transform: `translate(${x(year)}px, ${y(fixed[year])}px)`, transition: glide }} />
       <circle r="4.5" fill="#3ddc84" style={{ transform: `translate(${x(year)}px, ${y(cs[year])}px)`, transition: glide }} />
       {[0, 5, 10, 15, 20].map((t) => (
-        <text key={t} x={x(t)} y={H - 8} fill="#8a9592" fontSize="10" textAnchor="middle" className="num">
+        <text key={t} x={x(t)} y={H - 8} fill="#8a9592" fontSize={narrow ? 9 : 10} textAnchor="middle" className="num">
           Y{t}
         </text>
       ))}
@@ -127,11 +136,23 @@ export default function Simulator() {
   const raf = useRef(0);
   const lanesRef = useRef<HTMLDivElement>(null);
   // Mount the WebGL cell walls only once the lanes approach the viewport, keeping first load light.
-  const [wallsOn, setWallsOn] = useState(false);
+  // 0 = none, 1 = top wall, 2 = both. The walls mount on separate frames so their WebGL setup never lands in one long task.
+  const [wallsOn, setWallsOn] = useState(0);
   useEffect(() => {
+    if (wallsOn !== 1) return;
+    const id = requestAnimationFrame(() => setTimeout(() => setWallsOn(2), 0));
+    return () => cancelAnimationFrame(id);
+  }, [wallsOn]);
+  useEffect(() => {
+    // Fetch and evaluate the cell-wall code while the browser is idle, so mounting later only creates the context.
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+    const prefetch = () => void import("./CellWall");
+    if (w.requestIdleCallback) w.requestIdleCallback(prefetch);
+    else setTimeout(prefetch, 1500);
+
     const el = lanesRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && setWallsOn(true), { rootMargin: "900px 0px" });
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setWallsOn((n) => n || 1), { rootMargin: "900px 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -178,7 +199,10 @@ export default function Simulator() {
     const lanesEl = lanesRef.current;
     if (lanesEl) {
       const r = lanesEl.getBoundingClientRect();
-      if (r.top < 70 || r.bottom > window.innerHeight) window.scrollTo({ top: window.scrollY + r.top - 84, behavior: "smooth" });
+      if (r.top < 70 || r.bottom > window.innerHeight) window.scrollTo({
+          top: window.scrollY + r.top - 84,
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
     }
     const start = performance.now();
     const tick = (now: number) => {
@@ -212,7 +236,7 @@ export default function Simulator() {
         Your fleet. Your year. <span className="text-accent">Your number.</span>
       </h2>
       <p className="mt-5 max-w-2xl text-muted">
-        Set the size of your fleet and how long it has been running, then discharge it. On top is your battery with a
+        Set the size of your fleet and how long it has been running, then run the simulations. On top is your battery with a
         conventional BMS, where each string stops when its weakest cell empties. Below is the same battery with REON
         cell-level control, which bypasses cells as they empty and eases off weak cells so they age more slowly.
       </p>
@@ -265,7 +289,7 @@ export default function Simulator() {
 
       {/* Race lanes */}
       <div ref={lanesRef} className="mt-4 grid gap-4">
-        {(["fixed", "cellscape"] as const).map((mode) => {
+        {(["fixed", "cellscape"] as const).map((mode, laneIdx) => {
           const isFixed = mode === "fixed";
           const m = laneMeta[mode];
           const done = phase === "done";
@@ -293,7 +317,7 @@ export default function Simulator() {
                 </div>
               </div>
               <div className="relative aspect-[26/10] w-full md:aspect-[26/9]">
-                {wallsOn && (
+                {wallsOn > laneIdx && (
                   <CellWall soh={(isFixed ? fixed : cs).years[year].soh} mode={mode} drawn={drawn} nMinFrac={DEFAULTS.nMinFrac} />
                 )}
                 {done && (
@@ -325,7 +349,7 @@ export default function Simulator() {
       </div>
 
       {/* Chart */}
-      <div className="mt-4 rounded-2xl border border-line bg-surface p-6">
+      <div className="mt-4 rounded-2xl border border-line bg-surface p-4 md:p-6">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           <span className="eyebrow">Usable capacity over 20 years</span>
           <span className="flex items-center gap-2 text-xs text-muted">

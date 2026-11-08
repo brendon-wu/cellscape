@@ -60,7 +60,7 @@ export default function Hero() {
             <div
               key={i}
               aria-hidden={beat !== i}
-              className="absolute bottom-16 left-6 right-6 max-w-3xl md:bottom-20 md:left-10"
+              className="absolute bottom-16 left-6 right-6 max-w-3xl motion-reduce:!transition-none md:bottom-20 md:left-10"
               style={{
                 opacity: beat === i ? 1 : 0,
                 transform: `translate3d(0,${beat === i ? 0 : beat > i ? -24 : 24}px,0)`,

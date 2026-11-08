@@ -7,6 +7,8 @@ export default function Counter({ value, format, ms = 1100 }: { value: number; f
   const ref = useRef<HTMLSpanElement>(null);
   const shown = useRef(0);
   const [seen, setSeen] = useState(false);
+  // React renders the starting text once; after that the animation owns the text node.
+  const [initial] = useState(() => format(0));
 
   useEffect(() => {
     const el = ref.current;
@@ -38,5 +40,5 @@ export default function Counter({ value, format, ms = 1100 }: { value: number; f
     return () => cancelAnimationFrame(raf);
   }, [value, seen, format, ms]);
 
-  return <span ref={ref}>{format(seen ? shown.current : 0)}</span>;
+  return <span ref={ref}>{initial}</span>;
 }
