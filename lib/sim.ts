@@ -81,7 +81,7 @@ export function fixedStringAhCells(q: ArrayLike<number>) {
 
 /** Energy (Ah·cells) with selective bypass: cells exit as they empty until active < nMin. */
 export function bypassStringAhCells(q: ArrayLike<number>, nMin: number) {
-  const s = Array.from(q).sort((a, b) => a - b);
+  const s = Float64Array.from(q).sort(); // typed-array sort is numeric and far faster than Array#sort with a comparator
   const n = s.length;
   let e = 0;
   let prev = 0;
@@ -121,7 +121,7 @@ export interface StrategyResult {
   totalCapexUsd: number;
 }
 export interface Comparison {
-  results: Record<StrategyId, StrategyResult>;
+  results: Partial<Record<StrategyId, StrategyResult>> & Record<"fixed" | "wearLevel", StrategyResult>;
   extraYears: number;
   npvGainUsd: number;
   capexSavedUsd: number;
@@ -260,7 +260,7 @@ function runStrategy(p: SimParams, pop: CellPop, id: StrategyId): StrategyResult
     // Age one year. Wear-leveling: weak cells sit out part of each cycle.
     if (wear) {
       for (let s = 0; s < p.strings; s++) {
-        const sl = Array.from(q.subarray(s * cps, (s + 1) * cps)).sort((a, b) => a - b);
+        const sl = q.slice(s * cps, (s + 1) * cps).sort();
         const med = sl[cps >> 1];
         for (let i = s * cps; i < (s + 1) * cps; i++) part[i] = Math.min(1, Math.max(0.6, q[i] / med));
       }
@@ -275,23 +275,31 @@ function runStrategy(p: SimParams, pop: CellPop, id: StrategyId): StrategyResult
   return { id, years, breachYear, npvUsd: cumNpv, newCellKWh, totalCapexUsd: totalCapex };
 }
 
-/** Year at which retention first drops below the obligation if nothing is done. */
+/** Year at which retention first drops below the obligation if nothing is done (quarter-year resolution). */
 function unremediedBreach(p: SimParams, pop: CellPop, bypass: boolean, maxYears = 30) {
   const n = p.strings * p.cellsPerString;
   const cps = p.cellsPerString;
   const nMin = Math.ceil(p.nMinFrac * cps);
   const q = new Float64Array(n);
-  for (let t = 0.25; t <= maxYears; t += 0.25) {
-    for (let i = 0; i < n; i++)
-      q[i] = pop.q0[i] * (1 - pop.k[i] * (A_CYC * Math.sqrt(p.cyclesPerYear * t) + B_CAL * Math.sqrt(t)));
+  const below = (t: number) => {
+    const fade = A_CYC * Math.sqrt(p.cyclesPerYear * t) + B_CAL * Math.sqrt(t);
+    for (let i = 0; i < n; i++) q[i] = pop.q0[i] * (1 - pop.k[i] * fade);
     let ah = 0;
     for (let s = 0; s < p.strings; s++) {
       const sl = q.subarray(s * cps, (s + 1) * cps);
       ah += bypass ? bypassStringAhCells(sl, nMin) * (1 - p.bypassLossFrac) : fixedStringAhCells(sl);
     }
-    if (ah / (n * p.cellAh) < p.obligationFrac) return t;
+    return ah / (n * p.cellAh) < p.obligationFrac;
+  };
+  // Retention only falls with time, so binary-search the first quarter-year step that is below the floor.
+  let lo = 1, hi = Math.round(maxYears * 4);
+  if (!below(hi / 4)) return maxYears;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (below(mid / 4)) hi = mid;
+    else lo = mid + 1;
   }
-  return maxYears;
+  return lo / 4;
 }
 
 /** Year at which the average cell falls below the obligation. */
@@ -316,13 +324,11 @@ export function lifetimes(p: SimParams = DEFAULTS) {
   };
 }
 
-export function runSimulation(p: SimParams = DEFAULTS): Comparison {
+export function runSimulation(p: SimParams = DEFAULTS, extra: StrategyId[] = []): Comparison {
   const pop = makeCells(p);
-  const ids: StrategyId[] = ["fixed", "bypass", "wearLevel", "pitStop"];
-  const results = Object.fromEntries(ids.map((id) => [id, runStrategy(p, pop, id)])) as Record<
-    StrategyId,
-    StrategyResult
-  >;
+  // The UI compares fixed strings with wear-leveling; other strategies run only when asked for.
+  const ids = [...new Set<StrategyId>(["fixed", "wearLevel", ...extra])];
+  const results = Object.fromEntries(ids.map((id) => [id, runStrategy(p, pop, id)])) as Comparison["results"];
   const lt = { fixed: unremediedBreach(p, pop, false), bypass: unremediedBreach(p, pop, true) };
   const best = results.wearLevel;
   const nameplateKWh = (p.strings * p.cellsPerString * p.cellAh * p.cellV) / 1000;

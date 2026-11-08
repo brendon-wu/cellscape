@@ -59,11 +59,18 @@ export default function Hero() {
           {BEATS.map((b, i) => (
             <div
               key={i}
-              className="absolute bottom-16 left-6 right-6 max-w-3xl transition-all duration-700 md:bottom-20 md:left-10"
+              aria-hidden={beat !== i}
+              className="absolute bottom-16 left-6 right-6 max-w-3xl md:bottom-20 md:left-10"
               style={{
                 opacity: beat === i ? 1 : 0,
-                transform: `translateY(${beat === i ? 0 : beat > i ? -24 : 24}px)`,
-                transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+                transform: `translate3d(0,${beat === i ? 0 : beat > i ? -24 : 24}px,0)`,
+                // The outgoing beat clears quickly before the incoming one arrives, so headlines never overlap.
+                // Hidden beats also turn invisible after fading, so their links cannot catch clicks.
+                transition:
+                  beat === i
+                    ? "opacity 600ms cubic-bezier(0.22,1,0.36,1) 180ms, transform 700ms cubic-bezier(0.22,1,0.36,1) 180ms, visibility 0s 0s"
+                    : "opacity 200ms ease-out, transform 300ms ease-out, visibility 0s 200ms",
+                visibility: beat === i ? "visible" : "hidden",
               }}
             >
               <p className="eyebrow mb-4">{b.eyebrow}</p>
@@ -83,6 +90,7 @@ export default function Hero() {
               {i === 2 && (
                 <a
                   href="#simulator"
+                  tabIndex={beat === i ? 0 : -1}
                   className="pointer-events-auto mt-7 inline-flex items-center gap-3 rounded-full bg-accent px-6 py-3 text-sm font-medium text-bg transition hover:brightness-110"
                 >
                   Simulate your battery <span aria-hidden>→</span>

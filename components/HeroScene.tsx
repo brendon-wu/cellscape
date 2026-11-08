@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BoxGeometry, Color, EdgesGeometry, InstancedMesh, LineSegments, Object3D } from "three";
 import { healthColor } from "./cellColor";
 
@@ -158,8 +158,12 @@ function Cells({ progress }: { progress: React.RefObject<number> }) {
 }
 
 export default function HeroScene({ progress }: { progress: React.RefObject<number> }) {
+  // Fade the scene in once its first frame is drawn, instead of popping in after the chunk loads.
+  const [ready, setReady] = useState(false);
   return (
     <Canvas
+      onCreated={() => requestAnimationFrame(() => setReady(true))}
+      style={{ opacity: ready ? 1 : 0, transition: "opacity 900ms ease-out" }}
       frameloop="demand"
       dpr={[1, 1.5]}
       camera={{ fov: 35, near: 1, far: 600, position: [0, 18, 95] }}

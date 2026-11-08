@@ -18,7 +18,7 @@ function laneModel(soh: Float32Array, mode: "fixed" | "cellscape") {
   const nMin = Math.ceil(DEFAULTS.nMinFrac * CPS);
   const stops = new Float32Array(STRINGS);
   for (let s = 0; s < STRINGS; s++) {
-    const sl = Array.from(soh.subarray(s * CPS, (s + 1) * CPS)).sort((a, b) => a - b);
+    const sl = soh.slice(s * CPS, (s + 1) * CPS).sort();
     stops[s] = mode === "fixed" ? sl[0] : sl[CPS - nMin];
   }
   // Delivered kWh, strings locked and cells bypassed after drawing `d` (fraction of nameplate Ah) from every string.
@@ -126,6 +126,15 @@ export default function Simulator() {
   const drawn = useRef(0);
   const raf = useRef(0);
   const lanesRef = useRef<HTMLDivElement>(null);
+  // Mount the WebGL cell walls only once the lanes approach the viewport, keeping first load light.
+  const [wallsOn, setWallsOn] = useState(false);
+  useEffect(() => {
+    const el = lanesRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setWallsOn(true), { rootMargin: "900px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   // Live readouts, written straight to the DOM each frame to avoid re-rendering React at 60 fps.
   const out = {
     fixedKwh: useRef<HTMLSpanElement>(null),
@@ -283,8 +292,23 @@ export default function Simulator() {
                   </div>
                 </div>
               </div>
-              <div className="aspect-[26/10] w-full md:aspect-[26/9]">
-                <CellWall soh={(isFixed ? fixed : cs).years[year].soh} mode={mode} drawn={drawn} nMinFrac={DEFAULTS.nMinFrac} />
+              <div className="relative aspect-[26/10] w-full md:aspect-[26/9]">
+                {wallsOn && (
+                  <CellWall soh={(isFixed ? fixed : cs).years[year].soh} mode={mode} drawn={drawn} nMinFrac={DEFAULTS.nMinFrac} />
+                )}
+                {done && (
+                  <div
+                    className={`lane-badge absolute left-1/2 top-1/2 flex w-max max-w-[92%] items-center justify-center gap-3 rounded-full border px-5 py-2.5 text-center md:px-6 md:py-3 ${
+                      isFixed ? "border-amber/50 bg-[#1a1408]/90 text-amber" : "border-accent/50 bg-[#08180f]/90 text-accent"
+                    }`}
+                  >
+                    <span className="num text-xs sm:text-sm md:text-base">
+                      {isFixed
+                        ? `STRINGS LOCKED · ${Math.round(strandedKWh).toLocaleString()} kWh stranded behind weak cells`
+                        : `+${Math.round(strandedKWh).toLocaleString()} kWh delivered · weak cells bypassed`}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="px-5 pb-4 md:px-6">
                 <div className="h-2 w-full overflow-hidden rounded-full bg-line">
@@ -295,19 +319,6 @@ export default function Simulator() {
                   />
                 </div>
               </div>
-              {done && (
-                <div
-                  className={`lane-badge absolute left-1/2 top-1/2 flex items-center gap-3 rounded-full border px-6 py-3 ${
-                    isFixed ? "border-amber/50 bg-[#1a1408]/90 text-amber" : "border-accent/50 bg-[#08180f]/90 text-accent"
-                  }`}
-                >
-                  <span className="num text-sm md:text-base">
-                    {isFixed
-                      ? `STRINGS LOCKED · ${Math.round(strandedKWh).toLocaleString()} kWh stranded behind weak cells`
-                      : `+${Math.round(strandedKWh).toLocaleString()} kWh delivered · weak cells bypassed`}
-                  </span>
-                </div>
-              )}
             </div>
           );
         })}

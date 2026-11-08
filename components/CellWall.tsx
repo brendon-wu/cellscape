@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BoxGeometry, Color, InstancedMesh, Object3D } from "three";
 import { CHARGE, CULPRIT, DEAD, TRAPPED, healthColor } from "./cellColor";
 
@@ -26,7 +26,10 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
   const invalidate = useThree((s) => s.invalidate);
   const lastD = useRef(-1);
 
+  const gl = useThree((s) => s.gl);
+
   // Render on demand: redraw when the discharge level moves or the cells change, otherwise stay idle.
+  // The poll that watches the discharge level only runs while the wall is on screen.
   useEffect(() => {
     lastD.current = -1;
     invalidate();
@@ -35,16 +38,23 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
       if ((drawn.current ?? 0) !== lastD.current) invalidate();
       raf = requestAnimationFrame(poll);
     };
-    raf = requestAnimationFrame(poll);
-    return () => cancelAnimationFrame(raf);
-  }, [drawn, invalidate, soh, mode, nMinFrac]);
+    const io = new IntersectionObserver(([e]) => {
+      cancelAnimationFrame(raf);
+      if (e.isIntersecting) raf = requestAnimationFrame(poll);
+    });
+    io.observe(gl.domElement);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [drawn, invalidate, soh, mode, nMinFrac, gl]);
 
   // Per-string stop point: fixed = weakest cell; cellscape = when active cells drop below nMin.
   const stops = useMemo(() => {
     const out = new Float32Array(STRINGS);
     const nMin = Math.ceil(nMinFrac * CPS);
     for (let s = 0; s < STRINGS; s++) {
-      const sl = Array.from(soh.subarray(s * CPS, (s + 1) * CPS)).sort((a, b) => a - b);
+      const sl = soh.slice(s * CPS, (s + 1) * CPS).sort();
       out[s] = mode === "fixed" ? sl[0] : sl[CPS - nMin];
     }
     return out;
@@ -100,8 +110,12 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
 }
 
 export default function CellWall(props: Props) {
+  const [ready, setReady] = useState(false);
   return (
-    <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -1, 106], near: 1, far: 800 }}>
+    <Canvas
+      onCreated={() => requestAnimationFrame(() => setReady(true))}
+      style={{ opacity: ready ? 1 : 0, transition: "opacity 700ms ease-out" }}
+      frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -1, 106], near: 1, far: 800 }}>
       <color attach="background" args={["#0b0e10"]} />
       <Wall {...props} />
       <EffectComposer>
