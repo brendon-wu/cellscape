@@ -173,7 +173,7 @@ export default function HeroScene({ progress }: { progress: React.RefObject<numb
       <fog attach="fog" args={["#07090a", 90, 220]} />
       <Cells progress={progress} />
       <EffectComposer>
-        <Bloom intensity={1.2} luminanceThreshold={0.7} luminanceSmoothing={0.3} mipmapBlur />
+        <Bloom intensity={1.2} luminanceThreshold={0.7} luminanceSmoothing={0.3} mipmapBlur resolutionScale={0.5} />
       </EffectComposer>
     </Canvas>
   );

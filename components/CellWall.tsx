@@ -1,13 +1,57 @@
 "use client";
 
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { BoxGeometry, Color, InstancedMesh, Object3D } from "three";
-import { CHARGE, CULPRIT, DEAD, TRAPPED, healthColor } from "./cellColor";
+import { useEffect, useMemo, useRef } from "react";
+
+// The cell wall is a flat, front-on grid of squares, so it is drawn on a 2D canvas: no WebGL context or
+// shader setup, which used to stall the page for 50-200 ms the first time the simulator came into view.
+// Framing and colors match the previous three.js version (camera fov 30 at z=106, y=-1; linear-light color math).
 
 const STRINGS = 14, COLS = 8, ROWS = 52, CPS = COLS * ROWS;
 const N = STRINGS * CPS;
 const GAP = 1.6;
+const GRID_W = STRINGS * COLS + (STRINGS - 1) * GAP;
+const VIEW_H = 2 * 106 * Math.tan((15 * Math.PI) / 180); // world units visible vertically
+const CAM_Y = -1;
+const CELL = 0.82;
+const BG = "#0b0e10";
+
+type RGB = [number, number, number]; // linear light
+const toLin = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const toSrgb = (c: number) => (c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055);
+const hex = (h: string): RGB => [0, 2, 4].map((i) => toLin(parseInt(h.slice(1 + i, 3 + i), 16) / 255)) as RGB;
+
+const DEAD = hex("#1a2023"), TRAPPED = hex("#f5b83d"), CHARGE = hex("#3ddc84"), CULPRIT = hex("#e23b3b");
+const RAMP: [number, RGB][] = [
+  [0.7, hex("#e23b3b")],
+  [0.76, hex("#f2683c")],
+  [0.82, hex("#f5b83d")],
+  [0.88, hex("#c8e35a")],
+  [0.94, hex("#3ddc84")],
+];
+/** Health ramp, red (<=70% SOH) to green (>=94%), interpolated in linear light. Writes into `out`. */
+function health(soh: number, out: RGB) {
+  const set = (c: RGB) => ((out[0] = c[0]), (out[1] = c[1]), (out[2] = c[2]), out);
+  if (soh <= RAMP[0][0]) return set(RAMP[0][1]);
+  for (let i = 1; i < RAMP.length; i++) {
+    const [t1, c1] = RAMP[i], [t0, c0] = RAMP[i - 1];
+    if (soh <= t1) {
+      const f = (soh - t0) / (t1 - t0);
+      for (let k = 0; k < 3; k++) out[k] = c0[k] + (c1[k] - c0[k]) * f;
+      return out;
+    }
+  }
+  return set(RAMP[RAMP.length - 1][1]);
+}
+
+// Linear color times a brightness factor -> one packed RGBA pixel (little-endian ABGR) for an ImageData buffer.
+const px = (c: RGB, k: number) => {
+  const r = Math.round(toSrgb(Math.min(1, c[0] * k)) * 255);
+  const g = Math.round(toSrgb(Math.min(1, c[1] * k)) * 255);
+  const b = Math.round(toSrgb(Math.min(1, c[2] * k)) * 255);
+  return ((255 << 24) | (b << 16) | (g << 8) | r) >>> 0;
+};
+const BG_PX = px(hex(BG), 1);
+const CULPRIT_PX = px(CULPRIT, 2.4), DEAD_PX = px(DEAD, 1);
 
 interface Props {
   soh: Float32Array;
@@ -16,37 +60,8 @@ interface Props {
   nMinFrac: number;
 }
 
-function Wall({ soh, mode, drawn, nMinFrac }: Props) {
-  const mesh = useRef<InstancedMesh>(null);
-  const geo = useMemo(() => new BoxGeometry(0.82, 0.82, 0.82), []);
-  const dummy = useMemo(() => new Object3D(), []);
-  const c = useMemo(() => new Color(), []);
-  const width = STRINGS * COLS + (STRINGS - 1) * GAP;
-  const invalidate = useThree((s) => s.invalidate);
-  const lastD = useRef(-1);
-
-  const gl = useThree((s) => s.gl);
-
-  // Render on demand: redraw when the discharge level moves or the cells change, otherwise stay idle.
-  // The poll that watches the discharge level only runs while the wall is on screen.
-  useEffect(() => {
-    lastD.current = -1;
-    invalidate();
-    let raf = 0;
-    const poll = () => {
-      if ((drawn.current ?? 0) !== lastD.current) invalidate();
-      raf = requestAnimationFrame(poll);
-    };
-    const io = new IntersectionObserver(([e]) => {
-      cancelAnimationFrame(raf);
-      if (e.isIntersecting) raf = requestAnimationFrame(poll);
-    });
-    io.observe(gl.domElement);
-    return () => {
-      io.disconnect();
-      cancelAnimationFrame(raf);
-    };
-  }, [drawn, invalidate, soh, mode, nMinFrac, gl]);
+export default function CellWall({ soh, mode, drawn, nMinFrac }: Props) {
+  const ref = useRef<HTMLCanvasElement>(null);
 
   // Per-string stop point: fixed = weakest cell; cellscape = when active cells drop below nMin.
   const stops = useMemo(() => {
@@ -59,69 +74,83 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
     return out;
   }, [soh, mode, nMinFrac]);
 
-  useLayoutEffect(() => {
-    const m = mesh.current;
-    if (!m) return;
-    for (let i = 0; i < N; i++) {
-      const s = Math.floor(i / CPS), j = i % CPS;
-      dummy.position.set(s * (COLS + GAP) + (j % COLS) - width / 2 + 0.5, Math.floor(j / COLS) - ROWS / 2, 0);
-      dummy.updateMatrix();
-      m.setMatrixAt(i, dummy.matrix);
-    }
-    m.instanceMatrix.needsUpdate = true;
-  }, [dummy, width]);
+  useEffect(() => {
+    const cv = ref.current;
+    if (!cv) return;
+    const ctx = cv.getContext("2d", { alpha: false });
+    if (!ctx) return;
+    const col: RGB = [0, 0, 0];
+    let w = 0, h = 0, last = -1, raf = 0, visible = false;
+    let img: ImageData | null = null, buf: Uint32Array | null = null;
 
-  useFrame(() => {
-    const m = mesh.current;
-    if (!m) return;
-    const d = drawn.current ?? 0;
-    if (d === lastD.current) return;
-    lastD.current = d;
-    for (let i = 0; i < N; i++) {
-      const s = Math.floor(i / CPS);
-      const h = soh[i];
-      const stop = stops[s];
-      const locked = d >= stop && d > 0;
-      const used = Math.min(d, stop);
-      const soc = Math.max(0, h - used) / h;
-      if (d === 0) {
-        // At rest: color by health so the weak cells stand out.
-        healthColor(h, c).multiplyScalar(h < 0.8 ? 2.1 : 0.7);
-      } else if (mode === "fixed" && locked && h <= stop + 1e-6) {
-        c.copy(CULPRIT).multiplyScalar(2.4); // the weak cell that stopped this string
-      } else if (mode === "cellscape" && h <= used) {
-        c.copy(DEAD); // emptied and bypassed; the string keeps running
-      } else if (locked && soc > 0.02) {
-        c.copy(TRAPPED).multiplyScalar(0.3 + 1.7 * soc); // energy stranded in healthy cells
-      } else {
-        c.copy(CHARGE).multiplyScalar(0.06 + 1.15 * soc); // draining charge
+    const size = () => {
+      const r = cv.getBoundingClientRect();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = Math.max(1, Math.round(r.width * dpr));
+      h = Math.max(1, Math.round(r.height * dpr));
+      if (cv.width !== w || cv.height !== h) {
+        cv.width = w;
+        cv.height = h;
       }
-      m.setColorAt(i, c);
-    }
-    m.instanceColor!.needsUpdate = true;
-  });
+      img = ctx.createImageData(w, h);
+      buf = new Uint32Array(img.data.buffer);
+      last = -1;
+    };
 
-  return (
-    <instancedMesh ref={mesh} args={[geo, undefined, N]} frustumCulled={false}>
-      <meshBasicMaterial toneMapped={false} />
-    </instancedMesh>
-  );
-}
+    // Pixels are written straight into one buffer (one putImageData per frame) instead of 5,824 fillRect calls.
+    const draw = (d: number) => {
+      if (!img || !buf) return;
+      const u = h / VIEW_H; // pixels per world unit
+      const half = (CELL * u) / 2;
+      buf.fill(BG_PX);
+      for (let i = 0; i < N; i++) {
+        const s = (i / CPS) | 0, j = i - s * CPS;
+        const hh = soh[i];
+        const stop = stops[s];
+        const locked = d >= stop && d > 0;
+        const used = Math.min(d, stop);
+        const soc = Math.max(0, hh - used) / hh;
+        let c: number;
+        if (d === 0) c = px(health(hh, col), hh < 0.8 ? 2.1 : 0.7); // at rest: weak cells stand out
+        else if (mode === "fixed" && locked && hh <= stop + 1e-6) c = CULPRIT_PX; // the cell that stopped its string
+        else if (mode === "cellscape" && hh <= used) c = DEAD_PX; // emptied and bypassed
+        else if (locked && soc > 0.02) c = px(TRAPPED, 0.3 + 1.7 * soc); // energy stranded in healthy cells
+        else c = px(CHARGE, 0.06 + 1.15 * soc); // draining charge
+        const cx = w / 2 + (s * (COLS + GAP) + (j % COLS) - GRID_W / 2 + 0.5) * u;
+        const cy = h / 2 - (((j / COLS) | 0) - ROWS / 2 - CAM_Y) * u;
+        const x0 = Math.max(0, Math.round(cx - half)), x1 = Math.min(w, Math.round(cx + half));
+        const y0 = Math.max(0, Math.round(cy - half)), y1 = Math.min(h, Math.round(cy + half));
+        for (let y = y0; y < y1; y++) buf.fill(c, y * w + x0, y * w + x1);
+      }
+      ctx.putImageData(img, 0, 0);
+    };
 
-// No bloom here: its shader setup cost ~150 ms per wall on mount; bright, untone-mapped colors carry the glow.
-export default function CellWall(props: Props) {
-  const [ready, setReady] = useState(false);
-  return (
-    <Canvas
-      onCreated={() => requestAnimationFrame(() => setReady(true))}
-      style={{ opacity: ready ? 1 : 0, transition: "opacity 700ms ease-out" }}
-      frameloop="demand"
-      dpr={[1, 1.25]}
-      gl={{ antialias: false, powerPreference: "high-performance" }} // axis-aligned squares need no MSAA; cheaper setup
-      camera={{ fov: 30, position: [0, -1, 106], near: 1, far: 800 }}
-    >
-      <color attach="background" args={["#0b0e10"]} />
-      <Wall {...props} />
-    </Canvas>
-  );
+    // Redraw only while on screen, and only when the discharge level or the size changed.
+    const tick = () => {
+      const d = drawn.current ?? 0;
+      if (d !== last) {
+        last = d;
+        draw(d);
+      }
+      raf = visible ? requestAnimationFrame(tick) : 0;
+    };
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !raf) raf = requestAnimationFrame(tick);
+    });
+    const ro = new ResizeObserver(() => {
+      size();
+      if (visible && !raf) raf = requestAnimationFrame(tick);
+    });
+    size();
+    io.observe(cv);
+    ro.observe(cv);
+    return () => {
+      io.disconnect();
+      ro.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [soh, mode, stops, drawn]);
+
+  return <canvas ref={ref} className="block h-full w-full" style={{ background: BG }} aria-hidden="true" />;
 }

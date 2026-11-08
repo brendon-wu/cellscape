@@ -1,11 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULTS, runSimulation } from "@/lib/sim";
 import Counter from "./Counter";
 
-const CellWall = dynamic(() => import("./CellWall"), { ssr: false, loading: () => <div className="h-full w-full bg-[#0b0e10]" /> });
+import CellWall from "./CellWall";
 
 const fmtUsd = (v: number) => (Math.abs(v) >= 1e6 ? `$${(v / 1e6).toFixed(2)}M` : `$${Math.round(v / 1000)}k`);
 const DISCHARGE_MS = 5200;
@@ -135,46 +134,6 @@ export default function Simulator() {
   const drawn = useRef(0);
   const raf = useRef(0);
   const lanesRef = useRef<HTMLDivElement>(null);
-  // Mount the WebGL cell walls only once the lanes approach the viewport, keeping first load light.
-  // 0 = none, 1 = top wall, 2 = both. The walls mount on separate frames so their WebGL setup never lands in one long task.
-  const [wallsOn, setWallsOn] = useState(0);
-  useEffect(() => {
-    if (wallsOn !== 1) return;
-    const id = requestAnimationFrame(() => setTimeout(() => setWallsOn(2), 0));
-    return () => cancelAnimationFrame(id);
-  }, [wallsOn]);
-  useEffect(() => {
-    // Fetch and evaluate the cell-wall code while the browser is idle, so mounting later only creates the context.
-    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
-    // (Mounting the walls at load was tried and measured worse: their GPU setup stalled frames for seconds after load.)
-    const prefetch = () => void import("./CellWall");
-    if (w.requestIdleCallback) w.requestIdleCallback(prefetch);
-    else setTimeout(prefetch, 1500);
-
-    const el = lanesRef.current;
-    if (!el) return;
-    // Build the walls once they are near AND scrolling has paused, so their setup never interrupts motion.
-    let near = false;
-    let timer = 0;
-    const tryMount = () => {
-      clearTimeout(timer);
-      if (near) timer = window.setTimeout(() => setWallsOn((n) => n || 1), 160);
-    };
-    const io = new IntersectionObserver(
-      ([e]) => {
-        near = e.isIntersecting;
-        tryMount();
-      },
-      { rootMargin: "900px 0px" }
-    );
-    io.observe(el);
-    window.addEventListener("scroll", tryMount, { passive: true });
-    return () => {
-      clearTimeout(timer);
-      io.disconnect();
-      window.removeEventListener("scroll", tryMount);
-    };
-  }, []);
   // Live readouts, written straight to the DOM each frame to avoid re-rendering React at 60 fps.
   const out = {
     fixedKwh: useRef<HTMLSpanElement>(null),
@@ -308,7 +267,7 @@ export default function Simulator() {
 
       {/* Race lanes */}
       <div ref={lanesRef} className="mt-4 grid gap-4">
-        {(["fixed", "cellscape"] as const).map((mode, laneIdx) => {
+        {(["fixed", "cellscape"] as const).map((mode) => {
           const isFixed = mode === "fixed";
           const m = laneMeta[mode];
           const done = phase === "done";
@@ -336,9 +295,7 @@ export default function Simulator() {
                 </div>
               </div>
               <div className="relative aspect-[26/10] w-full md:aspect-[26/9]">
-                {wallsOn > laneIdx && (
-                  <CellWall soh={(isFixed ? fixed : cs).years[year].soh} mode={mode} drawn={drawn} nMinFrac={DEFAULTS.nMinFrac} />
-                )}
+                <CellWall soh={(isFixed ? fixed : cs).years[year].soh} mode={mode} drawn={drawn} nMinFrac={DEFAULTS.nMinFrac} />
                 {done && (
                   <div
                     className={`lane-badge absolute left-1/2 top-1/2 flex w-max max-w-[92%] items-center justify-center gap-3 rounded-full border px-5 py-2.5 text-center md:px-6 md:py-3 ${
