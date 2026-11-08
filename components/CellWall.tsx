@@ -115,7 +115,11 @@ export default function CellWall(props: Props) {
     <Canvas
       onCreated={() => requestAnimationFrame(() => setReady(true))}
       style={{ opacity: ready ? 1 : 0, transition: "opacity 700ms ease-out" }}
-      frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -1, 106], near: 1, far: 800 }}>
+      frameloop="demand"
+      dpr={[1, 1.25]}
+      gl={{ antialias: false, powerPreference: "high-performance" }} // axis-aligned squares need no MSAA; cheaper setup
+      camera={{ fov: 30, position: [0, -1, 106], near: 1, far: 800 }}
+    >
       <color attach="background" args={["#0b0e10"]} />
       <Wall {...props} />
     </Canvas>
