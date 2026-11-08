@@ -1,7 +1,6 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BoxGeometry, Color, InstancedMesh, Object3D } from "three";
 import { CHARGE, CULPRIT, DEAD, TRAPPED, healthColor } from "./cellColor";
@@ -109,6 +108,7 @@ function Wall({ soh, mode, drawn, nMinFrac }: Props) {
   );
 }
 
+// No bloom here: its shader setup cost ~150 ms per wall on mount; bright, untone-mapped colors carry the glow.
 export default function CellWall(props: Props) {
   const [ready, setReady] = useState(false);
   return (
@@ -118,9 +118,6 @@ export default function CellWall(props: Props) {
       frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 30, position: [0, -1, 106], near: 1, far: 800 }}>
       <color attach="background" args={["#0b0e10"]} />
       <Wall {...props} />
-      <EffectComposer>
-        <Bloom intensity={0.7} luminanceThreshold={0.6} mipmapBlur />
-      </EffectComposer>
     </Canvas>
   );
 }

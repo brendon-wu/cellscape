@@ -153,9 +153,27 @@ export default function Simulator() {
 
     const el = lanesRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && setWallsOn((n) => n || 1), { rootMargin: "900px 0px" });
+    // Build the walls once they are near AND scrolling has paused, so their setup never interrupts motion.
+    let near = false;
+    let timer = 0;
+    const tryMount = () => {
+      clearTimeout(timer);
+      if (near) timer = window.setTimeout(() => setWallsOn((n) => n || 1), 160);
+    };
+    const io = new IntersectionObserver(
+      ([e]) => {
+        near = e.isIntersecting;
+        tryMount();
+      },
+      { rootMargin: "900px 0px" }
+    );
     io.observe(el);
-    return () => io.disconnect();
+    window.addEventListener("scroll", tryMount, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      io.disconnect();
+      window.removeEventListener("scroll", tryMount);
+    };
   }, []);
   // Live readouts, written straight to the DOM each frame to avoid re-rendering React at 60 fps.
   const out = {
